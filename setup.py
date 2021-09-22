@@ -4,8 +4,9 @@ def getPackages():
     out = []
     for item in ['azure', 'forest', 'park', 'sun-valley']:
         out.append('TKinterModernThemes/themes/' + item)
-        out.append('TKinterModernThemes/themes/' + item + '/dark')
-        out.append('TKinterModernThemes/themes/' + item + '/light')
+        out.append('TKinterModernThemes/themes/' + item + '/theme')
+        out.append('TKinterModernThemes/themes/' + item + '/theme/dark')
+        out.append('TKinterModernThemes/themes/' + item + '/theme/light')
     return out
 
 setup(
@@ -17,7 +18,7 @@ setup(
     packages=['TKinterModernThemes', 'TKinterModernThemes/examples'] + getPackages(),
     install_requires=[],
     # *strongly* suggested for sharing
-    version='1.0.1',
+    version='1.0.2',
     # The license can be anything you like
     license='MIT',
     description='A collection of modern themes with code that makes it easy to integrate into a tkinter project..',

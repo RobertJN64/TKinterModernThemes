@@ -20,7 +20,7 @@ setup(
     include_package_data=True,
     install_requires=[],
     # *strongly* suggested for sharing
-    version='1.0.2',
+    version='1.0.3',
     # The license can be anything you like
     license='MIT',
     description='A collection of modern themes with code that makes it easy to integrate into a tkinter project..',

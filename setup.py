@@ -16,6 +16,8 @@ setup(
     author_email='robertjnies@gamil.com',
     # Needed to actually package something
     packages=['TKinterModernThemes', 'TKinterModernThemes/examples'] + getPackages(),
+    package_data={'': ['README.md']},
+    include_package_data=True,
     install_requires=[],
     # *strongly* suggested for sharing
     version='1.0.2',

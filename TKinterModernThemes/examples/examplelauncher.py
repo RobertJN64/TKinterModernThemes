@@ -66,5 +66,8 @@ class App(TKMT.ThemedTKinterFrame):
         self.usecommandargs.set(False)
         self.usethemeconfigfile.set(False)
 
-if __name__ == "__main__":
+def run():
     App()
+
+if __name__ == "__main__":
+    run()

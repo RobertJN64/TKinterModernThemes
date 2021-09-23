@@ -9,16 +9,13 @@ class ThemeStyles:
     SlideSwitch = "Switch.TCheckbutton" #slide switch
 
 class ThemedTKinterFrame(ttk.Frame):
-    def __init__(self, title: str, theme: str='', mode: str='', pathtothemes:str = "venv/Lib/site-packages/",
-                 usecommandlineargs=True, useconfigfile=True):
+    def __init__(self, title: str, theme: str='', mode: str='', usecommandlineargs=True, useconfigfile=True):
         """
         Loads tkinter and creates a themed frame.
 
         :param title: Window title
         :param theme: Main theme file. One of (azure / sun-valley / park). Defaults to park.
         :param mode: Light or dark theme. One of (light / dark). Defaults to dark.
-        :param pathtothemes: Relative path to themes. Default is correct if you are in
-        main project directory and using a venv
         :param usecommandlineargs: If this is True (default), the frame checks for params passed into the script
         launch to grab a theme.
         :param useconfigfile: If this is True (default), the frame checks for a file named themeconfig.json and seaches
@@ -51,16 +48,22 @@ class ThemedTKinterFrame(ttk.Frame):
 
         root = tk.Tk()
         root.title(title)
-        root.tk.call("source", pathtothemes + "TKinterModernThemes/themes/" + theme.lower() + "/" +
+        root.tk.call("source", __file__ + "/../themes/" + theme.lower() + "/" +
                      theme.lower() + ".tcl")
-        root.tk.call("set_theme", mode)
+        root.tk.call("set_theme", mode.lower())
         super().__init__(root)
 
-    def run(self):
+    def run(self, cleanresize=True):
         """
         Runs the main loop of the tkinter frame. Also does some basic rendering stuff, such as packing
         and resizing the window.
         """
+        if cleanresize:
+            for index in range(self.grid_size()[0]):
+                self.columnconfigure(index=index, weight=1)
+            for index in range(self.grid_size()[1]):
+                self.rowconfigure(index=index, weight=1)
+
         self.pack(fill="both", expand=True)
         self.master.update()
         self.master.minsize(self.master.winfo_width(), self.master.winfo_height())

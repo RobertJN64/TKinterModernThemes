@@ -5,12 +5,9 @@ import tkinter as tk
 
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, pathtothemes):
-        super().__init__("TKinter Custom Themes Demo", theme, mode, pathtothemes)
-
-        for index in [0, 1, 2]:
-            self.columnconfigure(index=index, weight=1)
-            self.rowconfigure(index=index, weight=1)
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+        super().__init__("TKinter Custom Themes Demo", theme, mode,
+                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
 
         self.checkbox1 = tk.BooleanVar()
         self.checkbox2 = tk.BooleanVar(value=True)
@@ -256,6 +253,7 @@ class App(TKMT.ThemedTKinterFrame):
                 self.themelabel.grid(row=3, column=2)
             notebookPane()
         buildTreeView()
+        self.run()
 
     def printcheckboxvars(self, number):
         print("Checkbox number:", number, "was pressed")
@@ -283,8 +281,5 @@ class App(TKMT.ThemedTKinterFrame):
         print("The letter q is not allowed.")
         return False
 
-
 if __name__ == '__main__':
-    app = App(input("Theme (azure / park / sun-valley): ").lower(), input("dark / light: ").lower(),
-              pathtothemes='../../') #the path is weird because of the example folder
-    app.run()
+    app = App(input("Theme (azure / park / sun-valley): ").lower(), input("dark / light: ").lower())

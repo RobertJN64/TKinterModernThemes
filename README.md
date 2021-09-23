@@ -49,8 +49,7 @@ Azure is similar to forest, with a blue as the accent color.
 
 These themes can be added by creating a themed frame.
 A theme and mode (dark/light) can be specified.
-If the file is in a unusual location, an relative path
-might need to be included.
+
 
 ## Example:
 ```python
@@ -72,8 +71,6 @@ with parameters in `super().__init__()`
 - title: Window title 
 - theme: Main theme file. One of (azure / sun-valley / park). Defaults to park.
 - mode: Light or dark theme. One of (light / dark). Defaults to dark.
-- pathtothemes: Relative path to themes. Default is correct if you are in
-        main project directory and using a venv
 - usecommandlineargs: If this is True (default), the frame checks for params passed into the script
         launch to grab a theme.
 - useconfigfile: If this is True (default), the frame checks for a file named themeconfig.json and seaches for
@@ -149,4 +146,5 @@ class App(TKMT.ThemedTKinterFrame):
 App()
 ```
 
-See [example.py](TKinterModernThemes/examples/example.py) for more info.
+See [allwidgets.py](TKinterModernThemes/examples/allwidgets.py) for info on each widget.
+See [examples](TKinterModernThemes/examples) for more examples on using TKMT frames.

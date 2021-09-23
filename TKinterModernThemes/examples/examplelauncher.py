@@ -3,10 +3,10 @@ from tkinter import ttk
 import tkinter as tk
 from functools import partial
 
-import allwidgets as demo1
-import switch as demo2
-import togglebutton as demo3
-import accentbutton as demo4
+import TKinterModernThemes.examples.allwidgets as demo1
+import TKinterModernThemes.examples.switch as demo2
+import TKinterModernThemes.examples.togglebutton as demo3
+import TKinterModernThemes.examples.accentbutton as demo4
 
 demos = [demo1, demo2, demo3, demo4]
 names = ["All Widgets Demo", "Slide Switch Demo", "Toggle Button Demo", "Accent Button Demo"]

@@ -1,7 +1,6 @@
 import TKinterModernThemes as TKMT
 from tkinter import ttk
 import tkinter as tk
-from functools import partial
 
 import TKinterModernThemes.examples.allwidgets as demo1
 import TKinterModernThemes.examples.switch as demo2
@@ -24,16 +23,12 @@ class App(TKMT.ThemedTKinterFrame):
         self.usecommandargs = tk.BooleanVar(value=True)
         self.usethemeconfigfile = tk.BooleanVar(value=True)
 
-        self.buttonframe = ttk.LabelFrame(self, text="Examples")
-        self.buttonframe.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
-
+        self.buttonframe = self.addWidgetFrame("Examples", 0, 0)
         for i in range(0, len(demos)):
-            demobutton = ttk.Button(self.buttonframe, text=names[i], command=partial(self.runDemo, demos[i]))
-            demobutton.grid(row=i, column=0, padx=10, pady=10, sticky="nsew")
+            self.buttonframe.Button(text=names[i], command=self.runDemo, args=(demos[i],))
 
-        self.menuframe = ttk.LabelFrame(self, text="Config")
-        self.menuframe.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
+        self.menuframe = self.addWidgetFrame("Config", 0, 1)
 
         self.thememenu = ttk.OptionMenu(self.menuframe, self.themeoptionvar, self.themeoptions[0], *self.themeoptions,
                                        command=self.flipSwitches)
@@ -44,11 +39,13 @@ class App(TKMT.ThemedTKinterFrame):
         self.thememenu.grid(row=1, column=0, padx=5, pady=10, sticky="nsew")
 
         self.commandargsswitch = ttk.Checkbutton(self.menuframe, variable=self.usecommandargs,
-                                                style=TKMT.ThemeStyles.SlideSwitch, text="Use Command Parameters")
+                                                style=TKMT.ThemeStyles.CheckbuttonStyles.SlideSwitch,
+                                                 text="Use Command Parameters")
         self.commandargsswitch.grid(row=2, column=0, padx=5, pady=10, sticky="nsew")
 
         self.commandargsswitch = ttk.Checkbutton(self.menuframe, variable=self.usethemeconfigfile,
-                                                style=TKMT.ThemeStyles.SlideSwitch, text="Use Theme Config File")
+                                                style=TKMT.ThemeStyles.CheckbuttonStyles.SlideSwitch,
+                                                 text="Use Theme Config File")
         self.commandargsswitch.grid(row=3, column=0, padx=5, pady=10, sticky="nsew")
 
         self.run()

@@ -3,7 +3,6 @@ from tkinter import ttk
 from functools import partial
 import tkinter as tk
 
-
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
         super().__init__("TKinter Custom Themes Demo", theme, mode,
@@ -23,78 +22,30 @@ class App(TKMT.ThemedTKinterFrame):
 
         self.slidervar = tk.IntVar(value=50)
 
-        def buildCheckboxFrame():
-            self.check_frame = ttk.LabelFrame(self, text="Checkbuttons", padding=(20, 20))
-            self.check_frame.grid(row=0, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.check_frame = self.addWidgetFrame("CheckButtons", 0, 0)
+        self.check_frame.Checkbutton("Unchecked", self.checkbox1, self.printcheckboxvars, (1,))
+        self.check_frame.Checkbutton("Unchecked", self.checkbox2, self.printcheckboxvars, (1,))
+        self.check_frame.Checkbutton("Disabled Unchecked", self.checkbox1, disabled=True)
+        self.check_frame.Checkbutton("Disabled Checked", self.checkbox2, disabled=True)
 
-            self.check_1 = ttk.Checkbutton(self.check_frame, text="Unchecked", variable=self.checkbox1,
-                                           command=partial(self.printcheckboxvars, 1))
-            self.check_1.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
-
-            self.check_2 = ttk.Checkbutton(self.check_frame, text="Checked", variable=self.checkbox2,
-                                           command=partial(self.printcheckboxvars, 2))
-            self.check_2.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
-
-            self.check_3 = ttk.Checkbutton(self.check_frame, text="Disabled Unchecked", state="disabled",
-                                           variable=self.checkbox1)
-            self.check_3.state(["disabled !alternate"])
-            self.check_3.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
-
-            self.check_5 = ttk.Checkbutton(self.check_frame, text="Disabled Checked", state="disabled",
-                                           variable=self.checkbox2)
-            self.check_5.state(["disabled !alternate"])
-            self.check_5.grid(row=5, column=0, padx=10, pady=10, sticky="nsew")
-        buildCheckboxFrame()
         # Separator
         self.separator = ttk.Separator(self)
         self.separator.grid(row=1, column=0, padx=(20, 10), pady=10, sticky='ew')
 
-        def buildRadiobuttonFrame():
-            # Create a Frame for the Radiobuttons
-            self.radio_frame = ttk.LabelFrame(self, text="Radiobuttons", padding=(20, 20))
-            self.radio_frame.grid(row=2, column=0, padx=(20, 20), pady=10, sticky="nsew")
+        self.radio_frame = self.addWidgetFrame("RadioButtons", 2, 0)
+        self.radio_frame.Radiobutton("Unselected", self.radiobuttonvar, value="button1")
+        self.radio_frame.Radiobutton("Selected", self.radiobuttonvar, value="button2")
+        self.radio_frame.Radiobutton("Disabled", self.radiobuttonvar, value="button3", disabled=True)
+        self.radiobuttonvar.trace_add('write', self.printradiobuttons)
 
-            # Radiobuttons
-            self.radio_1 = ttk.Radiobutton(self.radio_frame, text="Unselected", variable=self.radiobuttonvar,
-                                           value="button1")
-            self.radio_1.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
-
-            self.radio_2 = ttk.Radiobutton(self.radio_frame, text="Selected", variable=self.radiobuttonvar,
-                                           value='button2')
-            self.radio_2.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
-
-            self.radio_4 = ttk.Radiobutton(self.radio_frame, text="Disabled", state="disabled",
-                                           variable=self.radiobuttonvar, value='button3')
-            self.radio_4.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
-            self.radiobuttonvar.trace_add('write', self.printradiobuttons)
-
-            # Create a Frame for input widgets
-            self.widgets_frame = ttk.Frame(self, padding=(0, 0, 0, 10))
-            self.widgets_frame.grid(
-                row=0, column=1, padx=10, pady=(30, 10), sticky="nsew", rowspan=3
-            )
-        buildRadiobuttonFrame()
-
-        self.switch = ttk.Checkbutton(self, text="Switch", style=TKMT.ThemeStyles.SlideSwitch)
+        self.switch = ttk.Checkbutton(self, text="Switch", style=TKMT.ThemeStyles.CheckbuttonStyles.SlideSwitch)
         self.switch.grid(row=3, column=0, padx=5, pady=10, sticky="nsew")
 
-        def buildButtonFrame():
-            self.button_frame = ttk.LabelFrame(self, text="Buttons", padding=(20, 20))
-            self.button_frame.grid(row=0, column=1, padx=(20, 20), pady=10, sticky="nsew")
-            # Button
-            self.button = ttk.Button(self.button_frame, text="Button", command=self.handleButtonClick)
-            self.button.grid(row=0, column=0, padx=5, pady=10, sticky="nsew")
 
-            # Accentbutton
-            self.accentbutton = ttk.Button(self.button_frame, text="Accent button", style=TKMT.ThemeStyles.AccentButton,
-                                           command=self.handleButtonClick)
-            self.accentbutton.grid(row=1, column=0, padx=5, pady=10, sticky="nsew")
-
-            # Togglebutton
-            self.togglebutton = ttk.Checkbutton(self.button_frame, text="Toggle button",
-                                                style=TKMT.ThemeStyles.ToggleButton,variable=self.togglebuttonvar)
-            self.togglebutton.grid(row=2, column=0, padx=5, pady=10, sticky="nsew")
-        buildButtonFrame()
+        self.button_frame = self.addWidgetFrame("Buttons", 0, 1)
+        self.button_frame.Button("Button", self.handleButtonClick)
+        self.button_frame.AccentButton("Accent Button", self.handleButtonClick)
+        self.button_frame.ToggleButton("Toggle Button", variable=self.togglebuttonvar)
 
         def buildInputFrame():
             # Create a Frame for input widgets
@@ -253,6 +204,7 @@ class App(TKMT.ThemedTKinterFrame):
                 self.themelabel.grid(row=3, column=2)
             notebookPane()
         buildTreeView()
+        self.debugPrint()
         self.run()
 
     def printcheckboxvars(self, number):

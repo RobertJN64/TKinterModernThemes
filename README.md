@@ -49,6 +49,7 @@ Azure is similar to forest, with a blue as the accent color.
 
 These themes can be added by creating a themed frame.
 A theme and mode (dark/light) can be specified.
+If you need multiple windows, all but one should be marked as topLevel.
 
 
 ## Example:
@@ -75,6 +76,9 @@ with parameters in `super().__init__()`
         launch to grab a theme.
 - useconfigfile: If this is True (default), the frame checks for a file named themeconfig.json and seaches for
         theme and mode. Config files override command line args.
+- topLevel: If this is True (default = False), this window will be a topLevel window
+        and inherit its theme and root from the main window. This is necessary if you
+        have multiple windows.
 
 By default, themeconfig.json overrides command line args, which overrides manually passed in themes,
 which override the defaults.

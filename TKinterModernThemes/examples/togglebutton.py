@@ -3,9 +3,9 @@ from tkinter import ttk
 import tkinter as tk
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
         super().__init__("Toggle button", theme, mode,
-                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
+                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
         self.togglebuttonvar = tk.BooleanVar()
         # Togglebutton
         self.togglebutton = ttk.Checkbutton(self, text="Toggle button", style=TKMT.ThemeStyles.ToggleButton,variable=self.togglebuttonvar)

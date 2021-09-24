@@ -5,9 +5,9 @@ import tkinter as tk
 
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
         super().__init__("TKinter Custom Themes Demo", theme, mode,
-                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
+                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
 
         self.checkbox1 = tk.BooleanVar()
         self.checkbox2 = tk.BooleanVar(value=True)
@@ -248,7 +248,7 @@ class App(TKMT.ThemedTKinterFrame):
                 self.textbox = tk.Label(self.tab_3, text='Normal text here.')
                 self.textbox.grid(row=0, column=0, pady=10, padx=5)
 
-                self.themelabel = ttk.Label(self, text=theme.capitalize() + " theme: " + mode,
+                self.themelabel = ttk.Label(self, text=self.theme.capitalize() + " theme: " + self.mode,
                                             font=('-size', 15, '-weight', 'bold'))
                 self.themelabel.grid(row=3, column=2)
             notebookPane()

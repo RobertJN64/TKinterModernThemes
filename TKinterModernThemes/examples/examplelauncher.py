@@ -36,19 +36,19 @@ class App(TKMT.ThemedTKinterFrame):
 
 
         self.thememenu = ttk.OptionMenu(self.menuframe, self.themeoptionvar, self.themeoptions[0], *self.themeoptions,
-                                        command=self.flipSwitches)
+                                       command=self.flipSwitches)
         self.thememenu.grid(row=0, column=0, padx=5, pady=10, sticky="nsew")
 
         self.thememenu = ttk.OptionMenu(self.menuframe, self.modeoptionvar, self.modeoptions[0], *self.modeoptions,
-                                        command=self.flipSwitches)
+                                       command=self.flipSwitches)
         self.thememenu.grid(row=1, column=0, padx=5, pady=10, sticky="nsew")
 
         self.commandargsswitch = ttk.Checkbutton(self.menuframe, variable=self.usecommandargs,
-                                                 style=TKMT.ThemeStyles.SlideSwitch, text="Use Command Parameters")
+                                                style=TKMT.ThemeStyles.SlideSwitch, text="Use Command Parameters")
         self.commandargsswitch.grid(row=2, column=0, padx=5, pady=10, sticky="nsew")
 
         self.commandargsswitch = ttk.Checkbutton(self.menuframe, variable=self.usethemeconfigfile,
-                                                 style=TKMT.ThemeStyles.SlideSwitch, text="Use Theme Config File")
+                                                style=TKMT.ThemeStyles.SlideSwitch, text="Use Theme Config File")
         self.commandargsswitch.grid(row=3, column=0, padx=5, pady=10, sticky="nsew")
 
         self.run()
@@ -56,11 +56,12 @@ class App(TKMT.ThemedTKinterFrame):
     def runDemo(self, demo):
         theme = self.themeoptionvar.get()
         if theme == self.themeoptions[0]:
-            theme = ""
+           theme = ""
         mode = self.modeoptionvar.get()
         if mode == self.modeoptions[0]:
-            mode = ""
-        demo.App(theme, mode, self.usecommandargs.get(), self.usethemeconfigfile.get())
+           mode = ""
+        demo.App(theme, mode, self.usecommandargs.get(), self.usethemeconfigfile.get(), topLevel=True)
+
 
     def flipSwitches(self, _):
         self.usecommandargs.set(False)

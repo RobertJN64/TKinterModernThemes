@@ -9,7 +9,8 @@ class ThemeStyles:
     SlideSwitch = "Switch.TCheckbutton" #slide switch
 
 class ThemedTKinterFrame(ttk.Frame):
-    def __init__(self, title: str, theme: str='', mode: str='', usecommandlineargs=True, useconfigfile=True):
+    def __init__(self, title: str, theme: str='', mode: str='', usecommandlineargs=True, useconfigfile=True,
+                 topLevel=False):
         """
         Loads tkinter and creates a themed frame.
 
@@ -17,9 +18,9 @@ class ThemedTKinterFrame(ttk.Frame):
         :param theme: Main theme file. One of (azure / sun-valley / park). Defaults to park.
         :param mode: Light or dark theme. One of (light / dark). Defaults to dark.
         :param usecommandlineargs: If this is True (default), the frame checks for params passed into the script
-        launch to grab a theme.
+            launch to grab a theme.
         :param useconfigfile: If this is True (default), the frame checks for a file named themeconfig.json and seaches
-        for theme and mode. Config files override command line args.
+            for theme and mode. Config files override command line args.
         """
 
         if usecommandlineargs:
@@ -45,12 +46,23 @@ class ThemedTKinterFrame(ttk.Frame):
         if mode == "":
             mode = "dark"
 
+        if topLevel:
+            root = tk.Toplevel()
+        else:
+            root = tk.Tk()
 
-        root = tk.Tk()
         root.title(title)
-        root.tk.call("source", __file__ + "/../themes/" + theme.lower() + "/" +
-                     theme.lower() + ".tcl")
+        try:
+            root.tk.call("source", __file__ + "/../themes/" + theme.lower() + "/" +
+                         theme.lower() + ".tcl")
+
+        except tk.TclError:
+            pass #theme already loaded...
+
         root.tk.call("set_theme", mode.lower())
+
+        self.theme = theme.lower()
+        self.mode = mode.lower()
         super().__init__(root)
 
     def run(self, cleanresize=True):

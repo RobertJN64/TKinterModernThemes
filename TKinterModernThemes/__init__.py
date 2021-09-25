@@ -86,8 +86,9 @@ class ThemedTKinterFrame(ttk.Frame): #, WidgetFrame.WidgetFrame):
         self.master.geometry("+{}+{}".format(x_cordinate, y_cordinate - 20))
         self.mainloop()
 
-    def addWidgetFrame(self, text, row, col, padx=(20,20), pady=(20,20), sticky="nsew"):
-        widgetFrame = WidgetFrame(self, text, row, col, padx, pady, sticky)
+    def addWidgetFrame(self, text, row, col, padx=(20,20), pady=(20,20), sticky="nsew", rowspan=1):
+        """Adds a widget frame, see WidgetFrame for more info."""
+        widgetFrame = WidgetFrame(self, text, row, col, padx, pady, rowspan, sticky)
         self.widgetFrames.append(Widget(widgetFrame, "Widget Frame", row, col, text))
         return widgetFrame
 

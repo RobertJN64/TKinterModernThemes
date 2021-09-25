@@ -1,7 +1,8 @@
 import TKinterModernThemes as TKMT
-from tkinter import ttk
 from functools import partial
+from tkinter import ttk
 import tkinter as tk
+import json
 
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
@@ -15,6 +16,7 @@ class App(TKMT.ThemedTKinterFrame):
         self.togglebuttonvar = tk.BooleanVar()
 
         self.textinputvar = tk.StringVar(value="Type text here.")
+        self.spinboxnumvar = tk.IntVar(value=25)
         self.spinboxcolorvar = tk.StringVar(value="blue")
 
         self.option_menu_list = ["a", "b", "c", "d"]
@@ -27,6 +29,7 @@ class App(TKMT.ThemedTKinterFrame):
         self.check_frame.Checkbutton("Unchecked", self.checkbox2, self.printcheckboxvars, (1,))
         self.check_frame.Checkbutton("Disabled Unchecked", self.checkbox1, disabled=True)
         self.check_frame.Checkbutton("Disabled Checked", self.checkbox2, disabled=True)
+        self.check_frame.SlideSwitch("Slide Switch", None)
 
         # Separator
         self.separator = ttk.Separator(self)
@@ -38,172 +41,92 @@ class App(TKMT.ThemedTKinterFrame):
         self.radio_frame.Radiobutton("Disabled", self.radiobuttonvar, value="button3", disabled=True)
         self.radiobuttonvar.trace_add('write', self.printradiobuttons)
 
-        self.switch = ttk.Checkbutton(self, text="Switch", style=TKMT.ThemeStyles.CheckbuttonStyles.SlideSwitch)
-        self.switch.grid(row=3, column=0, padx=5, pady=10, sticky="nsew")
-
-
         self.button_frame = self.addWidgetFrame("Buttons", 0, 1)
         self.button_frame.Button("Button", self.handleButtonClick)
         self.button_frame.AccentButton("Accent Button", self.handleButtonClick)
         self.button_frame.ToggleButton("Toggle Button", variable=self.togglebuttonvar)
 
-        def buildInputFrame():
-            # Create a Frame for input widgets
-            self.widgets_frame = ttk.LabelFrame(self, text="InputMethods", padding=(10, 10, 10, 10))
-            self.widgets_frame.grid(row=1, column=1, padx=10, pady=(30, 10), sticky="nsew", rowspan=3)
-            self.textinputvar.trace_add('write', self.textupdate)
-
-            # Entry
-            vfunc = self.register(self.validateText)
-            self.entry = ttk.Entry(self.widgets_frame, textvariable=self.textinputvar,
-                                   validatecommand=(vfunc, '%P'), validate='all')
-            self.entry.grid(row=0, column=0, padx=5, pady=(0, 10), sticky="ew")
-
-            # Spinbox
-            self.spinbox = ttk.Spinbox(self.widgets_frame, from_=0, to=100, increment=5)
-            self.spinbox.grid(row=1, column=0, padx=5, pady=10, sticky="ew")
-
-            self.spinbox2 = ttk.Spinbox(self.widgets_frame, textvariable=self.spinboxcolorvar,
-                                        values=['red', 'green', 'blue'], wrap=True)
-            self.spinbox2.grid(row=2, column=0, padx=5, pady=10, sticky="ew")
-
-            # Combobox
-            self.combobox = ttk.Combobox(self.widgets_frame, values=["You", "can", "edit", "these", "options."])
-            self.combobox.current(0)
-            self.combobox.grid(row=2, column=0, padx=5, pady=10, sticky="ew")
-
-            # Menu for the Menubutton
-            self.menu = tk.Menu(self)
-            self.menu.add_command(label="Menu item 1", command=partial(self.menuprint, "1"))
-            self.menu.add_command(label="Menu item 2", command=partial(self.menuprint, "2"))
-            self.menu.add_command(label="Menu item 3", command=partial(self.menuprint, "3"))
-            self.menu.add_command(label="Menu item 4", command=partial(self.menuprint, "4"))
-
-            # Menubutton
-            self.menubutton = ttk.Menubutton(self.widgets_frame, text="Pick an option", menu=self.menu, direction="below")
-            self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
-
-            # OptionMenu
-            self.optionmenu = ttk.OptionMenu(self.widgets_frame, self.optionmenuvar, self.option_menu_list[0],
-                                             command=lambda x: print("Menu:",x), *self.option_menu_list)
-            self.optionmenu.grid(row=5, column=0, padx=5, pady=10, sticky="nsew")
-        buildInputFrame()
-
-        def buildTreeView():
-            # Panedwindow
-            self.panedwindow = ttk.PanedWindow(self)
-            self.panedwindow.grid(row=0, column=2, pady=(25, 5), sticky="nsew", rowspan=3)
-
-            def treeviewPane():
-                # Pane #1
-                self.pane_1 = ttk.Frame(self.panedwindow, padding=5)
-                self.panedwindow.add(self.pane_1, weight=1)
-
-                # Scrollbar
-                self.scrollbar = ttk.Scrollbar(self.pane_1)
-                self.scrollbar.pack(side="right", fill="y")
-
-                # Treeview
-                self.treeview = ttk.Treeview(
-                    self.pane_1,
-                    selectmode="browse",
-                    yscrollcommand=self.scrollbar.set,
-                    columns=('#1',),
-                    height=10,
-                )
-                self.treeview.pack(expand=True, fill="both")
-                self.scrollbar.config(command=self.treeview.yview)
-
-                # Treeview columns
-                self.treeview.column("#0", anchor="w", width=120)
-                self.treeview.column("#1", anchor="w", width=120)
-
-                # Treeview headings
-                self.treeview.heading("#0", text="Files", anchor="center")
-                self.treeview.heading("#1", text="Purpose", anchor="center")
-
-                # Define treeview data
-                tree = [{'name': 'azure', 'subfiles': [{'name': 'azure.tcl', 'purpose': "Main theme file."},
-                                                       {'name': 'theme', 'subfiles':
-                                                           [{'name': 'dark.tcl', 'purpose': "Dark theme config."},
-                                                            {'name': 'light.tcl', 'purpose': "Light theme config."},
-                                                            {'name': 'dark', 'purpose': "Dark theme images."},
-                                                            {'name': 'light', 'purpose': "Light theme images."}]}]},
-                        {'name': 'forest', 'subfiles': [{'name': 'forest.tcl', 'purpose': "Main theme file."},
-                                                       {'name': 'theme', 'subfiles':
-                                                           [{'name': 'dark.tcl', 'purpose': "Dark theme config."},
-                                                            {'name': 'light.tcl', 'purpose': "Light theme config."},
-                                                            {'name': 'dark', 'purpose': "Dark theme images."},
-                                                            {'name': 'light', 'purpose': "Light theme images."}]}]},
-                        {'name': 'sun-valley', 'subfiles': [{'name': 'sun-valley.tcl', 'purpose': "Main theme file."},
-                                                        {'name': 'theme', 'subfiles':
-                                                            [{'name': 'dark.tcl', 'purpose': "Dark theme config."},
-                                                             {'name': 'light.tcl', 'purpose': "Light theme config."},
-                                                             {'name': 'dark', 'purpose': "Dark theme images."},
-                                                             {'name': 'light', 'purpose': "Light theme images."}]}]},
-                        {'name': 'park', 'subfiles': [{'name': 'park.tcl', 'purpose': "Main theme file."},
-                                                        {'name': 'theme', 'subfiles':
-                                                            [{'name': 'dark.tcl', 'purpose': "Dark theme config."},
-                                                             {'name': 'light.tcl', 'purpose': "Light theme config."},
-                                                             {'name': 'dark', 'purpose': "Dark theme images."},
-                                                             {'name': 'light', 'purpose': "Light theme images."}]}]},
-                        ]
+        # Create a Frame for input widgets
+        self.input_frame = self.addWidgetFrame("InputMethods", 1, 1, rowspan=2)
+        self.textinputvar.trace_add('write', self.textupdate)
+        self.input_frame.Entry(self.textinputvar, validatecommand=self.validateText)
+        self.input_frame.NumericaSpinbox(0,100,5,self.spinboxnumvar)
+        self.input_frame.NonnumericalSpinbox(['red', 'green', 'blue'], self.spinboxcolorvar, wrap=True)
 
 
-                def traverse(p, t, iid):
-                    for obj in t:
-                        iid[0] += 1
-                        self.treeview.insert(p, index='end', iid=iid[0], text=obj['name'], values=(obj.get('purpose', ""),))
-                        if obj.get('subfiles', []):
-                            self.treeview.item(iid[0], open=True)  # Open parents
-                        traverse(iid[0], obj.get('subfiles', []), iid)
-                traverse('', tree, [0])
-            treeviewPane()
+        # Combobox
+        #self.combobox = ttk.Combobox(self.widgets_frame, values=["You", "can", "edit", "these", "options."])
+        #self.combobox.current(0)
+        #self.combobox.grid(row=2, column=0, padx=5, pady=10, sticky="ew")
 
-            def notebookPane():
-                # Notebook, pane #2
-                self.pane_2 = ttk.Frame(self.panedwindow, padding=5)
-                self.panedwindow.add(self.pane_2, weight=3)
+        # Menu for the Menubutton
+        self.menu = tk.Menu(self)
+        self.menu.add_command(label="Menu item 1", command=partial(self.menuprint, "1"))
+        self.menu.add_command(label="Menu item 2", command=partial(self.menuprint, "2"))
+        self.menu.add_command(label="Menu item 3", command=partial(self.menuprint, "3"))
+        self.menu.add_command(label="Menu item 4", command=partial(self.menuprint, "4"))
 
-                self.notebook = ttk.Notebook(self.pane_2)
-                self.notebook.pack(fill="both", expand=True)
+        # Menubutton
+        #self.menubutton = ttk.Menubutton(self.widgets_frame, text="Pick an option", menu=self.menu, direction="below")
+        #self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
 
-                # Tab #1
-                self.tab_1 = ttk.Frame(self.notebook)
-                for col in [0, 1]:
-                    self.tab_1.columnconfigure(index=col, weight=1)
-                    self.tab_1.rowconfigure(index=col, weight=1)
-                self.notebook.add(self.tab_1, text="Tab 1")
+        # OptionMenu
+        #self.optionmenu = ttk.OptionMenu(self.widgets_frame, self.optionmenuvar, self.option_menu_list[0],
+        #                                 command=lambda x: print("Menu:",x), *self.option_menu_list)
+        #self.optionmenu.grid(row=5, column=0, padx=5, pady=10, sticky="nsew")
 
-                # Scale
-                self.scale = ttk.Scale(self.tab_1, from_=100, to=0, variable=self.slidervar)
-                self.scale.grid(row=0, column=0, padx=(20, 10), pady=(20, 0), sticky="ew")
+        self.displayframe = self.addWidgetFrame("Display Frame", 0, 2, rowspan=3)
 
-                # Progressbar
-                self.progress = ttk.Progressbar(self.tab_1, value=0, variable=self.slidervar, mode="determinate")
-                self.progress.grid(row=1, column=0, padx=(10, 20), pady=(20, 0), sticky="ew")
+        # Define treeview data
+        with open('treeviewdata.json') as f:
+            tree = json.load(f)
+        self.displayframe.Treeview(['Files', 'Purpose'], [120,120], 10, tree, 'subfiles', ['name', 'purpose'])
 
-                # Tab #2
-                self.tab_2 = ttk.Frame(self.notebook)
-                self.notebook.add(self.tab_2, text="Tab 2")
 
-                # Label
-                self.label = ttk.Label(self.tab_2, text="Label text here.", justify="center",
-                                       font=("-size", 15, "-weight", "bold"),)
-                self.label.grid(row=0, column=0, pady=10)
-
-                # Tab #3
-                self.tab_3 = ttk.Frame(self.notebook)
-                self.notebook.add(self.tab_3, text="Tab 3")
-
-                self.textbox = tk.Label(self.tab_3, text='Normal text here.')
-                self.textbox.grid(row=0, column=0, pady=10, padx=5)
-
-                self.themelabel = ttk.Label(self, text=self.theme.capitalize() + " theme: " + self.mode,
-                                            font=('-size', 15, '-weight', 'bold'))
-                self.themelabel.grid(row=3, column=2)
-            notebookPane()
-        buildTreeView()
+            # def notebookPane():
+            #     # Notebook, pane #2
+            #     self.pane_2 = ttk.Frame(self.panedwindow, padding=5)
+            #     self.panedwindow.add(self.pane_2, weight=3)
+            #
+            #     self.notebook = ttk.Notebook(self.pane_2)
+            #     self.notebook.pack(fill="both", expand=True)
+            #
+            #     # Tab #1
+            #     self.tab_1 = ttk.Frame(self.notebook)
+            #     for col in [0, 1]:
+            #         self.tab_1.columnconfigure(index=col, weight=1)
+            #         self.tab_1.rowconfigure(index=col, weight=1)
+            #     self.notebook.add(self.tab_1, text="Tab 1")
+            #
+            #     # Scale
+            #     self.scale = ttk.Scale(self.tab_1, from_=100, to=0, variable=self.slidervar)
+            #     self.scale.grid(row=0, column=0, padx=(20, 10), pady=(20, 0), sticky="ew")
+            #
+            #     # Progressbar
+            #     self.progress = ttk.Progressbar(self.tab_1, value=0, variable=self.slidervar, mode="determinate")
+            #     self.progress.grid(row=1, column=0, padx=(10, 20), pady=(20, 0), sticky="ew")
+            #
+            #     # Tab #2
+            #     self.tab_2 = ttk.Frame(self.notebook)
+            #     self.notebook.add(self.tab_2, text="Tab 2")
+            #
+            #     # Label
+            #     self.label = ttk.Label(self.tab_2, text="Label text here.", justify="center",
+            #                            font=("-size", 15, "-weight", "bold"),)
+            #     self.label.grid(row=0, column=0, pady=10)
+            #
+            #     # Tab #3
+            #     self.tab_3 = ttk.Frame(self.notebook)
+            #     self.notebook.add(self.tab_3, text="Tab 3")
+            #
+            #     self.textbox = tk.Label(self.tab_3, text='Normal text here.')
+            #     self.textbox.grid(row=0, column=0, pady=10, padx=5)
+            #
+            #     self.themelabel = ttk.Label(self, text=self.theme.capitalize() + " theme: " + self.mode,
+            #                                 font=('-size', 15, '-weight', 'bold'))
+            #     self.themelabel.grid(row=3, column=2)
+            #notebookPane()
+        #buildTreeView()
         self.debugPrint()
         self.run()
 

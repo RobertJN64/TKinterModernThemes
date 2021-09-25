@@ -8,6 +8,20 @@ def partial(command, *args):
         return PARTIAL(command, *args)
     return None
 
+def isFloat(x):
+    try:
+        float(x)
+        return True
+    except ValueError:
+        return False
+
+def isConstrainedFloat(lower, upper, x):
+    return isFloat(x) and lower <= float(x) <= upper
+
+def isMember(values, x):
+    return x in values
+
+
 class Widget:
     def __init__(self, widget, name, row, col, text="", command=None, args=()):
         self.widget = widget
@@ -21,7 +35,7 @@ class Widget:
             self.commandstr = " -> " + command.__name__ + str(args)
 
     def __str__(self):
-        if type(self) == WidgetFrame:
+        if type(self.widget) == WidgetFrame:
             return self.name + ": " + self.text
         if self.text == "":
             return self.name + self.commandstr
@@ -52,12 +66,6 @@ def tabulate(widgets):
             s += "-" * longesttext + "+"
         print(s)
 
-    def printEmpty():
-        s = '|'
-        for i in range(0, maxcol+1):
-            s += " " * longesttext + "|"
-        print(s)
-
     def centerText(text):
         ldif = longesttext - len(text)
         return " " * math.floor(ldif/2) + text + " " * math.ceil(ldif/2)
@@ -75,14 +83,12 @@ def tabulate(widgets):
 
     for r in range(0, maxrow+1):
         printSeperator()
-        printEmpty()
         printRow(r)
-        printEmpty()
     printSeperator()
     print()
 
 class WidgetFrame(ttk.LabelFrame):
-    def __init__(self, master, text, row, col, padx=(20,20), pady=(20,20), sticky="nsew"):
+    def __init__(self, master, text, row, col, padx=(20,20), pady=(20,20), rowspan=1, sticky="nsew"):
         """
         Creates a widget frame (a label frame with some bonus features)
         :param master: passed to LabelFrame, normally root or another frame
@@ -95,7 +101,7 @@ class WidgetFrame(ttk.LabelFrame):
         """
         super().__init__(master, text=text)
         self.text = text
-        self.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky)
+        self.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan)
 
         self.rowcounters = []
         self.widgets = []
@@ -215,6 +221,139 @@ class WidgetFrame(ttk.LabelFrame):
         """Wrapper function for making an accent button. All params same as Button"""
         return self.Button(text, command, args, row, col, padx, pady, sticky,
                            style=ThemeStyles.ButtonStyles.AccentButton)
+
+    def Entry(self, textvariable, row=None, col=0, padx=10, pady=10, sticky="nsew",
+              validatecommand=None, validatecommandargs=(), validatecommandmode='%P',
+              invalidcommand=None, invalidcommandargs=(), validate='all'):
+        """
+        Creates a ttk.Entry widget.
+        :param textvariable: Variable to be used for tracking text
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid
+        :param validatecommand: Command to be called for validation
+        :param validatecommandargs: Args to be passed to validate command
+        :param validatecommandmode: Callback substitution code, defaults to 'new value'
+        :param invalidcommand: Command to be called if text is invalid
+        :param invalidcommandargs: Args to be passed to invalid command
+        :param validate: When the widget should validate, default is 'all'
+        :return: ttk.Entry widget
+        """
+        validatefunc = self.register(partial(validatecommand, *validatecommandargs))
+        invalidfunc = self.register(partial(invalidcommand, *invalidcommandargs))
+        entry = ttk.Entry(self, textvariable=textvariable, validatecommand=(validatefunc, validatecommandmode),
+                          invalidcommand=(invalidfunc, validatecommandmode), validate=validate)
+
+        row = self.getRow(row, col)
+        entry.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky)
+
+        self.widgets.append(Widget(entry, "TextInput", row, col))
+
+        return entry
+
+    def NumericaSpinbox(self, lower, upper, increment, variable, validatecommand=isConstrainedFloat,
+                        validatecommandargs=(), validatecommandmode='%P', validate='focusout',
+                        row=None, col=0, padx=10, pady=10, sticky="nsew"):
+        """
+        Creates a ttk.Spinbox designed for numbers.
+        :param lower: Min value
+        :param upper: Max value
+        :param increment: Change when arrow is pressed
+        :param variable: Variable to hold value
+        :param validatecommand: Command called to validate input, defaults to isFloat
+            Will always contain lower and upper as first two params
+        :param validatecommandargs: Args passed to command
+        :param validatecommandmode: Command validation mode, defaults to new text
+        :param validate: When input should be validated, defaults to all
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid
+        :return: ttk.Spinbox
+        """
+        validatefunc = self.register(partial(validatecommand, lower, upper, *validatecommandargs))
+        spinbox = ttk.Spinbox(self, textvariable=variable, validatecommand=(validatefunc, validatecommandmode),
+                              validate=validate, from_=lower, to=upper, increment=increment)
+
+        row = self.getRow(row, col)
+        spinbox.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky)
+
+        self.widgets.append(Widget(spinbox, "NumericalSpinbox" + str((lower, upper, increment)), row, col))
+        return spinbox
+
+
+    def NonnumericalSpinbox(self, values, variable, validatecommand=isMember,
+                        validatecommandargs=(), validatecommandmode='%P', validate='focusout',
+                        row=None, col=0, padx=10, pady=10, sticky="nsew", wrap=True):
+        """
+        Creates a ttk.Spinbox designed for numbers.
+        :param values: Values for spinbox to rotate through
+        :param variable: Variable to hold value
+        :param validatecommand: Command called to validate input
+        :param validatecommandargs: Args passed to command, always contains values
+        :param validatecommandmode: Command validation mode, defaults to new text
+        :param validate: When input should be validated, defaults to on click out
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid
+        :param wrap: Values warp around
+        :return: ttk.Spinbox
+        """
+        validatefunc = self.register(partial(validatecommand, values, *validatecommandargs))
+        spinbox = ttk.Spinbox(self, textvariable=variable, validatecommand=(validatefunc, validatecommandmode),
+                              validate=validate, values=values, wrap=wrap)
+
+        row = self.getRow(row, col)
+        spinbox.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky)
+        name = "Spinbox"
+        if len(str(values)) < 25:
+            name = "Spinbox(" + str(values)[1:-2] + ")"
+        self.widgets.append(Widget(spinbox, name, row, col))
+        return spinbox
+
+    def Treeview(self, columnnames, columnwidths, height, data, datasubfilename, datacolumnnames=None,
+                 anchor='w', row=None, col=0, padx=10, pady=10, sticky="nsew"):
+        assert len(columnnames) == len(columnwidths), "Column params must be the same length"
+        if datacolumnnames is None:
+            datacolumnnames = columnnames
+        else:
+            assert len(columnnames) == len(datacolumnnames), "Column params must be the same length"
+        treeViewFrame = ttk.Frame(self)
+        row = self.getRow(row, col)
+        treeViewFrame.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky)
+        scrollbar = ttk.Scrollbar(treeViewFrame)
+        scrollbar.pack(side="right", fill="y")
+
+        columns = []
+        for i in range(1, len(columnnames)):
+            columns.append("#" + str(i))
+        treeview = ttk.Treeview(treeViewFrame, yscrollcommand=scrollbar.set, columns=columns, height=height)
+        treeview.pack(expand=True, fill="both")
+        scrollbar.config(command=treeview.yview)
+
+        for i in range(0, len(columnnames)):
+            treeview.column("#" + str(i), anchor=anchor, width=columnwidths[i])
+            treeview.heading("#" + str(i), text=columnnames[i], anchor="center")
+
+        def traverse(p, t, iid):
+            for obj in t:
+                iid[0] += 1
+                values = []
+                for value in datacolumnnames[1:]:
+                    values.append(obj.get(value, ""))
+                treeview.insert(p, index='end', iid=iid[0], text=obj[datacolumnnames[0]], values=values)
+                if obj.get(datasubfilename, []):
+                    treeview.item(iid[0], open=True)  # Open parents
+                traverse(iid[0], obj.get('subfiles', []), iid)
+
+        traverse('', data, [0])
+        self.widgets.append(Widget(treeview, "Treeview", row, col))
+        return treeview
 
 
     def debugPrint(self, recursive=True):

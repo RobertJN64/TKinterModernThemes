@@ -1,0 +1,25 @@
+[{"name": "azure", "subfiles": [{"name": "azure.tcl", "purpose": "Main theme file."},
+                                                       {"name": "theme", "subfiles":
+                                                           [{"name": "dark.tcl", "purpose": "Dark theme config."},
+                                                            {"name": "light.tcl", "purpose": "Light theme config."},
+                                                            {"name": "dark", "purpose": "Dark theme images."},
+                                                            {"name": "light", "purpose": "Light theme images."}]}]},
+                        {"name": "forest", "subfiles": [{"name": "forest.tcl", "purpose": "Main theme file."},
+                                                       {"name": "theme", "subfiles":
+                                                           [{"name": "dark.tcl", "purpose": "Dark theme config."},
+                                                            {"name": "light.tcl", "purpose": "Light theme config."},
+                                                            {"name": "dark", "purpose": "Dark theme images."},
+                                                            {"name": "light", "purpose": "Light theme images."}]}]},
+                        {"name": "sun-valley", "subfiles": [{"name": "sun-valley.tcl", "purpose": "Main theme file."},
+                                                        {"name": "theme", "subfiles":
+                                                            [{"name": "dark.tcl", "purpose": "Dark theme config."},
+                                                             {"name": "light.tcl", "purpose": "Light theme config."},
+                                                             {"name": "dark", "purpose": "Dark theme images."},
+                                                             {"name": "light", "purpose": "Light theme images."}]}]},
+                        {"name": "park", "subfiles": [{"name": "park.tcl", "purpose": "Main theme file."},
+                                                        {"name": "theme", "subfiles":
+                                                            [{"name": "dark.tcl", "purpose": "Dark theme config."},
+                                                             {"name": "light.tcl", "purpose": "Light theme config."},
+                                                             {"name": "dark", "purpose": "Dark theme images."},
+                                                             {"name": "light", "purpose": "Light theme images."}]}]}
+                        ]

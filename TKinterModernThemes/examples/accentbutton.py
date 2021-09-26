@@ -8,7 +8,7 @@ class App(TKMT.ThemedTKinterFrame):
         super().__init__("Accent button", theme, mode,
                          usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
 
-        self.frame = self.addWidgetFrame("Accent Button Frame", 0, 0)
+        self.frame = self.addLabelFrame("Accent Button Frame", 0, 0)
         self.frame.AccentButton("Accent Button", handleButtonClick)
         self.run()
 

@@ -24,7 +24,7 @@ class App(TKMT.ThemedTKinterFrame):
 
         self.slidervar = tk.IntVar(value=50)
 
-        self.check_frame = self.addWidgetFrame("CheckButtons", 0, 0)
+        self.check_frame = self.addLabelFrame("CheckButtons", 0, 0)
         self.check_frame.Checkbutton("Unchecked", self.checkbox1, self.printcheckboxvars, (1,))
         self.check_frame.Checkbutton("Unchecked", self.checkbox2, self.printcheckboxvars, (1,))
         self.check_frame.Checkbutton("Disabled Unchecked", self.checkbox1, disabled=True)
@@ -32,22 +32,22 @@ class App(TKMT.ThemedTKinterFrame):
         self.check_frame.SlideSwitch("Slide Switch", None)
 
         # Separator
-        self.separator = ttk.Separator(self)
+        self.separator = ttk.Separator(self.master)
         self.separator.grid(row=1, column=0, padx=(20, 10), pady=10, sticky='ew')
 
-        self.radio_frame = self.addWidgetFrame("RadioButtons", 2, 0)
+        self.radio_frame = self.addLabelFrame("RadioButtons", 2, 0)
         self.radio_frame.Radiobutton("Unselected", self.radiobuttonvar, value="button1")
         self.radio_frame.Radiobutton("Selected", self.radiobuttonvar, value="button2")
         self.radio_frame.Radiobutton("Disabled", self.radiobuttonvar, value="button3", disabled=True)
         self.radiobuttonvar.trace_add('write', self.printradiobuttons)
 
-        self.button_frame = self.addWidgetFrame("Buttons", 0, 1)
+        self.button_frame = self.addLabelFrame("Buttons", 0, 1)
         self.button_frame.Button("Button", self.handleButtonClick)
         self.button_frame.AccentButton("Accent Button", self.handleButtonClick)
         self.button_frame.ToggleButton("Toggle Button", variable=self.togglebuttonvar)
 
         # Create a Frame for input widgets
-        self.input_frame = self.addWidgetFrame("InputMethods", 1, 1, rowspan=2)
+        self.input_frame = self.addLabelFrame("InputMethods", 1, 1, rowspan=2)
         self.textinputvar.trace_add('write', self.textupdate)
         self.input_frame.Entry(self.textinputvar, validatecommand=self.validateText)
         self.input_frame.NumericaSpinbox(0,100,5,self.spinboxnumvar)
@@ -60,7 +60,7 @@ class App(TKMT.ThemedTKinterFrame):
         #self.combobox.grid(row=2, column=0, padx=5, pady=10, sticky="ew")
 
         # Menu for the Menubutton
-        self.menu = tk.Menu(self)
+        self.menu = tk.Menu(self.master)
         self.menu.add_command(label="Menu item 1", command=partial(self.menuprint, "1"))
         self.menu.add_command(label="Menu item 2", command=partial(self.menuprint, "2"))
         self.menu.add_command(label="Menu item 3", command=partial(self.menuprint, "3"))
@@ -75,7 +75,7 @@ class App(TKMT.ThemedTKinterFrame):
         #                                 command=lambda x: print("Menu:",x), *self.option_menu_list)
         #self.optionmenu.grid(row=5, column=0, padx=5, pady=10, sticky="nsew")
 
-        self.displayframe = self.addWidgetFrame("Display Frame", 0, 2, rowspan=3)
+        self.displayframe = self.addLabelFrame("Display Frame", 0, 2, rowspan=3)
 
         # Define treeview data
         with open('treeviewdata.json') as f:
@@ -85,8 +85,6 @@ class App(TKMT.ThemedTKinterFrame):
 
             # def notebookPane():
             #     # Notebook, pane #2
-            #     self.pane_2 = ttk.Frame(self.panedwindow, padding=5)
-            #     self.panedwindow.add(self.pane_2, weight=3)
             #
             #     self.notebook = ttk.Notebook(self.pane_2)
             #     self.notebook.pack(fill="both", expand=True)

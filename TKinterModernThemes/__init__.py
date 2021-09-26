@@ -1,11 +1,10 @@
 from TKinterModernThemes.ThemeStyles import ThemeStyles
-from TKinterModernThemes.WidgetFrame import WidgetFrame, Widget, tabulate
+from TKinterModernThemes.WidgetFrame import WidgetFrame
 import tkinter as tk
-from tkinter import ttk
 import json
 import sys
 
-class ThemedTKinterFrame(ttk.Frame): #, WidgetFrame.WidgetFrame):
+class ThemedTKinterFrame(WidgetFrame):
     def __init__(self, title: str, theme: str='', mode: str='', usecommandlineargs=True, useconfigfile=True,
                  topLevel=False):
         """
@@ -23,6 +22,15 @@ class ThemedTKinterFrame(ttk.Frame): #, WidgetFrame.WidgetFrame):
             have multiple windows.
         """
 
+        #Create tk root
+        if topLevel:
+            self.root = tk.Toplevel()
+        else:
+            self.root = tk.Tk()
+
+        self.root.title(title)
+
+        #region Set Theme
         if usecommandlineargs:
             args = sys.argv
             if len(args) == 3:
@@ -46,26 +54,17 @@ class ThemedTKinterFrame(ttk.Frame): #, WidgetFrame.WidgetFrame):
         if mode == "":
             mode = "dark"
 
-        if topLevel:
-            root = tk.Toplevel()
-        else:
-            root = tk.Tk()
-
-        root.title(title)
         try:
-            root.tk.call("source", __file__ + "/../themes/" + theme.lower() + "/" +
-                         theme.lower() + ".tcl")
-
+            self.root.tk.call("source", __file__ + "/../themes/" + theme.lower() + "/" + theme.lower() + ".tcl")
         except tk.TclError:
             pass #theme already loaded...
-
-        root.tk.call("set_theme", mode.lower())
+        self.root.tk.call("set_theme", mode.lower())
 
         self.theme = theme.lower()
         self.mode = mode.lower()
+        # endregion
 
-        self.widgetFrames = []
-        super().__init__(root)
+        super().__init__(self.root, "Master Frame")
 
     def run(self, cleanresize=True):
         """
@@ -73,38 +72,14 @@ class ThemedTKinterFrame(ttk.Frame): #, WidgetFrame.WidgetFrame):
         and resizing the window.
         """
         if cleanresize:
-            for index in range(self.grid_size()[0]):
-                self.columnconfigure(index=index, weight=1)
-            for index in range(self.grid_size()[1]):
-                self.rowconfigure(index=index, weight=1)
+            for index in range(self.root.grid_size()[0]):
+                self.root.columnconfigure(index=index, weight=1)
+            for index in range(self.root.grid_size()[1]):
+                self.root.rowconfigure(index=index, weight=1)
 
-        self.pack(fill="both", expand=True)
-        self.master.update()
-        self.master.minsize(self.master.winfo_width(), self.master.winfo_height())
-        x_cordinate = int((self.master.winfo_screenwidth() / 2) - (self.master.winfo_width() / 2))
-        y_cordinate = int((self.master.winfo_screenheight() / 2) - (self.master.winfo_height() / 2))
-        self.master.geometry("+{}+{}".format(x_cordinate, y_cordinate - 20))
-        self.mainloop()
-
-    def addWidgetFrame(self, text, row, col, padx=(20,20), pady=(20,20), sticky="nsew", rowspan=1):
-        """Adds a widget frame, see WidgetFrame for more info."""
-        widgetFrame = WidgetFrame(self, text, row, col, padx, pady, rowspan, sticky)
-        self.widgetFrames.append(Widget(widgetFrame, "Widget Frame", row, col, text))
-        return widgetFrame
-
-    def debugPrint(self, recursive=True):
-        subframes = []
-        for widget in self.widgetFrames:
-            if type(widget.widget) == WidgetFrame:
-                subframes.append(widget)
-
-        print("Master Frame")
-        tabulate(self.widgetFrames)
-        if recursive:
-            for frame in subframes:
-                frame.debugPrint()
-
-
-
-
-
+        self.root.update()
+        self.root.minsize(self.root.winfo_width(), self.root.winfo_height())
+        x_cordinate = int((self.root.winfo_screenwidth() / 2) - (self.root.winfo_width() / 2))
+        y_cordinate = int((self.root.winfo_screenheight() / 2) - (self.root.winfo_height() / 2))
+        self.root.geometry("+{}+{}".format(x_cordinate, y_cordinate - 20))
+        self.root.mainloop()

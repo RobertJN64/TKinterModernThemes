@@ -5,7 +5,7 @@ class App(TKMT.ThemedTKinterFrame):
     def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
         super().__init__("Toggle button", theme, mode,
                          usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
-        self.togglebuttonframe = self.addWidgetFrame("Toggle Button Frame", 0, 0)
+        self.togglebuttonframe = self.addLabelFrame("Toggle Button Frame", 0, 0)
         self.togglebuttonvar = tk.BooleanVar()
         # Togglebutton
         self.togglebutton = self.togglebuttonframe.ToggleButton(text="Toggle button", variable=self.togglebuttonvar)

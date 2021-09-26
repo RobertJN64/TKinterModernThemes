@@ -23,31 +23,23 @@ class App(TKMT.ThemedTKinterFrame):
         self.usecommandargs = tk.BooleanVar(value=True)
         self.usethemeconfigfile = tk.BooleanVar(value=True)
 
-        self.buttonframe = self.addWidgetFrame("Examples", 0, 0)
+        self.buttonframe = self.addLabelFrame("Examples", 0, 0)
         for i in range(0, len(demos)):
             self.buttonframe.Button(text=names[i], command=self.runDemo, args=(demos[i],))
 
 
-        self.menuframe = self.addWidgetFrame("Config", 0, 1)
+        self.menuframe = self.addLabelFrame("Config", 0, 1)
 
-        self.thememenu = ttk.OptionMenu(self.menuframe, self.themeoptionvar, self.themeoptions[0], *self.themeoptions,
+        self.thememenu = ttk.OptionMenu(self.menuframe.master, self.themeoptionvar, self.themeoptions[0], *self.themeoptions,
                                        command=self.flipSwitches)
         self.thememenu.grid(row=0, column=0, padx=5, pady=10, sticky="nsew")
 
-        self.thememenu = ttk.OptionMenu(self.menuframe, self.modeoptionvar, self.modeoptions[0], *self.modeoptions,
+        self.thememenu = ttk.OptionMenu(self.menuframe.master, self.modeoptionvar, self.modeoptions[0], *self.modeoptions,
                                        command=self.flipSwitches)
         self.thememenu.grid(row=1, column=0, padx=5, pady=10, sticky="nsew")
 
-        self.commandargsswitch = ttk.Checkbutton(self.menuframe, variable=self.usecommandargs,
-                                                style=TKMT.ThemeStyles.CheckbuttonStyles.SlideSwitch,
-                                                 text="Use Command Parameters")
-        self.commandargsswitch.grid(row=2, column=0, padx=5, pady=10, sticky="nsew")
-
-        self.commandargsswitch = ttk.Checkbutton(self.menuframe, variable=self.usethemeconfigfile,
-                                                style=TKMT.ThemeStyles.CheckbuttonStyles.SlideSwitch,
-                                                 text="Use Theme Config File")
-        self.commandargsswitch.grid(row=3, column=0, padx=5, pady=10, sticky="nsew")
-
+        self.menuframe.SlideSwitch("Use Command Parameters", self.usecommandargs, row=2)
+        self.menuframe.SlideSwitch("Use Theme Config File", self.usethemeconfigfile)
         self.run()
 
     def runDemo(self, demo):

@@ -1,7 +1,7 @@
 import TKinterModernThemes as TKMT
 from functools import partial
-from tkinter import ttk
 import tkinter as tk
+from tkinter import ttk
 import json
 
 class App(TKMT.ThemedTKinterFrame):
@@ -18,13 +18,14 @@ class App(TKMT.ThemedTKinterFrame):
         self.textinputvar = tk.StringVar(value="Type text here.")
         self.spinboxnumvar = tk.IntVar(value=25)
         self.spinboxcolorvar = tk.StringVar(value="blue")
+        self.comboboxvar = tk.StringVar()
 
         self.option_menu_list = ["a", "b", "c", "d"]
         self.optionmenuvar = tk.StringVar(value=self.option_menu_list[0])
 
         self.slidervar = tk.IntVar(value=50)
 
-        self.check_frame = self.addLabelFrame("CheckButtons", 0, 0)
+        self.check_frame = self.addLabelFrame("CheckButtons")
         self.check_frame.Checkbutton("Unchecked", self.checkbox1, self.printcheckboxvars, (1,))
         self.check_frame.Checkbutton("Unchecked", self.checkbox2, self.printcheckboxvars, (1,))
         self.check_frame.Checkbutton("Disabled Unchecked", self.checkbox1, disabled=True)
@@ -32,32 +33,26 @@ class App(TKMT.ThemedTKinterFrame):
         self.check_frame.SlideSwitch("Slide Switch", None)
 
         # Separator
-        self.separator = ttk.Separator(self.master)
-        self.separator.grid(row=1, column=0, padx=(20, 10), pady=10, sticky='ew')
+        self.Seperator()
 
-        self.radio_frame = self.addLabelFrame("RadioButtons", 2, 0)
+        self.radio_frame = self.addLabelFrame("RadioButtons")
         self.radio_frame.Radiobutton("Unselected", self.radiobuttonvar, value="button1")
         self.radio_frame.Radiobutton("Selected", self.radiobuttonvar, value="button2")
         self.radio_frame.Radiobutton("Disabled", self.radiobuttonvar, value="button3", disabled=True)
         self.radiobuttonvar.trace_add('write', self.printradiobuttons)
 
-        self.button_frame = self.addLabelFrame("Buttons", 0, 1)
+        self.button_frame = self.addLabelFrame("Buttons", col=1)
         self.button_frame.Button("Button", self.handleButtonClick)
         self.button_frame.AccentButton("Accent Button", self.handleButtonClick)
         self.button_frame.ToggleButton("Toggle Button", variable=self.togglebuttonvar)
 
         # Create a Frame for input widgets
-        self.input_frame = self.addLabelFrame("InputMethods", 1, 1, rowspan=2)
+        self.input_frame = self.addLabelFrame("InputMethods", col=1, rowspan=2)
         self.textinputvar.trace_add('write', self.textupdate)
         self.input_frame.Entry(self.textinputvar, validatecommand=self.validateText)
-        self.input_frame.NumericaSpinbox(0,100,5,self.spinboxnumvar)
+        self.input_frame.NumericalSpinbox(0,100,5,self.spinboxnumvar)
         self.input_frame.NonnumericalSpinbox(['red', 'green', 'blue'], self.spinboxcolorvar, wrap=True)
-
-
-        # Combobox
-        #self.combobox = ttk.Combobox(self.widgets_frame, values=["You", "can", "edit", "these", "options."])
-        #self.combobox.current(0)
-        #self.combobox.grid(row=2, column=0, padx=5, pady=10, sticky="ew")
+        self.input_frame.Combobox(["You", "can", "edit", "these", "options."], self.comboboxvar)
 
         # Menu for the Menubutton
         self.menu = tk.Menu(self.master)
@@ -66,16 +61,15 @@ class App(TKMT.ThemedTKinterFrame):
         self.menu.add_command(label="Menu item 3", command=partial(self.menuprint, "3"))
         self.menu.add_command(label="Menu item 4", command=partial(self.menuprint, "4"))
 
+
         # Menubutton
         #self.menubutton = ttk.Menubutton(self.widgets_frame, text="Pick an option", menu=self.menu, direction="below")
         #self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
 
         # OptionMenu
-        #self.optionmenu = ttk.OptionMenu(self.widgets_frame, self.optionmenuvar, self.option_menu_list[0],
-        #                                 command=lambda x: print("Menu:",x), *self.option_menu_list)
-        #self.optionmenu.grid(row=5, column=0, padx=5, pady=10, sticky="nsew")
+        self.input_frame.OptionMenu(self.option_menu_list, self.optionmenuvar, lambda x: print("Menu:",x))
 
-        self.displayframe = self.addLabelFrame("Display Frame", 0, 2, rowspan=3)
+        self.displayframe = self.addLabelFrame("Display Frame", col=2, rowspan=3)
 
         # Define treeview data
         with open('treeviewdata.json') as f:

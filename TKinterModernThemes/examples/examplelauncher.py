@@ -1,5 +1,4 @@
 import TKinterModernThemes as TKMT
-from tkinter import ttk
 import tkinter as tk
 
 import TKinterModernThemes.examples.allwidgets as demo1
@@ -23,21 +22,13 @@ class App(TKMT.ThemedTKinterFrame):
         self.usecommandargs = tk.BooleanVar(value=True)
         self.usethemeconfigfile = tk.BooleanVar(value=True)
 
-        self.buttonframe = self.addLabelFrame("Examples", 0, 0)
+        self.buttonframe = self.addLabelFrame("Examples")
         for i in range(0, len(demos)):
             self.buttonframe.Button(text=names[i], command=self.runDemo, args=(demos[i],))
 
-
-        self.menuframe = self.addLabelFrame("Config", 0, 1)
-
-        self.thememenu = ttk.OptionMenu(self.menuframe.master, self.themeoptionvar, self.themeoptions[0], *self.themeoptions,
-                                       command=self.flipSwitches)
-        self.thememenu.grid(row=0, column=0, padx=5, pady=10, sticky="nsew")
-
-        self.thememenu = ttk.OptionMenu(self.menuframe.master, self.modeoptionvar, self.modeoptions[0], *self.modeoptions,
-                                       command=self.flipSwitches)
-        self.thememenu.grid(row=1, column=0, padx=5, pady=10, sticky="nsew")
-
+        self.menuframe = self.addLabelFrame("Config", col=1)
+        self.menuframe.OptionMenu(self.themeoptions, self.themeoptionvar, command=self.flipSwitches)
+        self.menuframe.OptionMenu(self.modeoptions, self.modeoptionvar, command=self.flipSwitches)
         self.menuframe.SlideSwitch("Use Command Parameters", self.usecommandargs, row=2)
         self.menuframe.SlideSwitch("Use Theme Config File", self.usethemeconfigfile)
         self.run()

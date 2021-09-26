@@ -5,7 +5,7 @@ class App(TKMT.ThemedTKinterFrame):
     def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
         super().__init__("Switch", theme, mode, usecommandlineargs=usecommandlineargs,
                          useconfigfile=usethemeconfigfile, topLevel=topLevel)
-        self.switchframe = self.addLabelFrame("Switch Frame", 0, 0)
+        self.switchframe = self.addLabelFrame("Switch Frame")
         self.switchvar = tk.BooleanVar()
         self.switchframe.SlideSwitch("Switch", self.switchvar)
         self.run()

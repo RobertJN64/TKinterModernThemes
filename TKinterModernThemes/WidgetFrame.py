@@ -132,8 +132,8 @@ class WidgetFrame:
         return row
 
     #region Widget Frames
-    def addFrame(self, name: str, row: int, col: int, padx=(20,20), pady=(20,20), sticky="nsew", rowspan=1,
-                 widgetkwargs: dict = None, gridkwargs: dict = None):
+    def addFrame(self, name: str, row: int = None, col: int = 0, padx=(20,20), pady=(20,20), sticky="nsew",
+                 rowspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a widget frame based around a ttk.Frame
 
@@ -150,12 +150,13 @@ class WidgetFrame:
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         widget = ttk.Frame(self.master, **gridkwargs)
         frame = WidgetFrame(widget, name)
+        row = self.getRow(row, col)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, **gridkwargs)
         self.widgets.append(Widget(frame, "Widget Frame", row, col, name))
         return frame
 
-    def addLabelFrame(self, text: str, row: int, col: int, padx=(20, 20), pady=(20, 20), sticky="nsew", rowspan=1,
-                 widgetkwargs: dict = None, gridkwargs: dict = None):
+    def addLabelFrame(self, text: str, row: int = None, col: int = 0, padx=(20, 20), pady=(20, 20), sticky="nsew",
+                      rowspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a widget frame based around a ttk.Frame
 
@@ -172,6 +173,7 @@ class WidgetFrame:
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         widget = ttk.LabelFrame(self.master, text=text, **gridkwargs)
         frame = WidgetFrame(widget, text)
+        row = self.getRow(row, col)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, **gridkwargs)
         self.widgets.append(Widget(frame, "Widget Frame", row, col, text))
         return frame
@@ -261,7 +263,27 @@ class WidgetFrame:
                                    command=partial(command, *args)))
         return widget
 
-    # endregion
+    def Seperator(self, row: int = None, col: int = 0, padx=10, pady=10, sticky="ew",
+                  widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Adds a ttk.Seperator
+
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid, defaults to ew (recommended)
+        :param widgetkwargs: Passed to widget creation
+        :param gridkwargs: Passed to grid placement
+        """
+
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        widget = ttk.Separator(self.master, **widgetkwargs)
+        row = self.getRow(row, col)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        self.widgets.append(Widget(widget, "Seperator", row, col))
+        return widget
+
     def Button(self, text: str, command=None, args=(), row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
                style=None, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
@@ -330,7 +352,7 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, "TextInput", row, col))
         return widget
 
-    def NumericaSpinbox(self, lower: float, upper: float, increment: float, variable: tk.Variable,
+    def NumericalSpinbox(self, lower: float, upper: float, increment: float, variable: tk.Variable,
                         validatecommand=isConstrainedFloat, validatecommandargs=(), validatecommandmode='%P',
                         validate='focusout', row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
                         widgetkwargs: dict = None, gridkwargs: dict = None):
@@ -418,8 +440,7 @@ class WidgetFrame:
         columns = []
         for i in range(1, len(columnnames)):
             columns.append("#" + str(i))
-        widget = ttk.Treeview(widgetFrame, yscrollcommand=scrollbar.set, columns=columns, height=height,
-                              **widgetkwargs)
+        widget = ttk.Treeview(widgetFrame, yscrollcommand=scrollbar.set, columns=columns, height=height, **widgetkwargs)
         widget.pack(expand=True, fill="both")
         scrollbar.config(command=widget.yview)
 
@@ -442,7 +463,65 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, "Treeview", row, col))
         return widget
 
+    def OptionMenu(self, values: list, variable: tk.Variable, command=None, args=(), default=None, row: int=None,
+                   col: int = 0, padx=10, pady=10, sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Creates a ttk.OptionMenu
 
+        :param variable: holds current state
+        :param values: options
+        :param command: Called on value selection with param value
+        :param args: Passed to command (before menu value)
+        :param default: default value, defaults to first item
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid
+        :param widgetkwargs: Passed to widget creation
+        :param gridkwargs: Passed to grid placement
+        """
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        row = self.getRow(row, col)
+        if default is None:
+            default = values[0]
+        widget = ttk.OptionMenu(self.master, variable, default, command=partial(command,*args), *values, **widgetkwargs)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        name = "OptionMenu"
+        if len(str(values)) < 25:
+            name = "OptionMenu(" + str(values)[1:-2] + ")"
+        self.widgets.append(Widget(widget, name, row, col))
+        return widget
+
+    def Combobox(self, values: list, variable: tk.Variable, default = 0, row: int = None, col: int = 0, padx=10,
+                 pady=10, sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Creates a ttk.Combobox (editable drop down menu)
+
+        :param values: List of menu values
+        :param default: Default menu values
+        :param variable: Is set to value of box
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid
+        :param widgetkwargs: Passed to widget creation
+        :param gridkwargs: Passed to grid placement
+        """
+
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        row = self.getRow(row, col)
+        widget = ttk.Combobox(self.master, textvariable = variable, values=values, **widgetkwargs)
+        widget.current(default)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        name = "Combobox"
+        if len(str(values)) < 25:
+            name = "Combobox(" + str(values)[1:-2] + ")"
+        self.widgets.append(Widget(widget, name, row, col))
+        return widget
+
+    # endregion
     def debugPrint(self, recursive=True):
         subframes = []
         for widget in self.widgets:

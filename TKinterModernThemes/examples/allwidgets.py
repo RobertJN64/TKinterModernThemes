@@ -34,14 +34,14 @@ class App(TKMT.ThemedTKinterFrame):
 
         # Separator
         self.Seperator()
-
         self.radio_frame = self.addLabelFrame("RadioButtons")
         self.radio_frame.Radiobutton("Unselected", self.radiobuttonvar, value="button1")
         self.radio_frame.Radiobutton("Selected", self.radiobuttonvar, value="button2")
         self.radio_frame.Radiobutton("Disabled", self.radiobuttonvar, value="button3", disabled=True)
         self.radiobuttonvar.trace_add('write', self.printradiobuttons)
 
-        self.button_frame = self.addLabelFrame("Buttons", col=1)
+        self.setActiveCol(1)
+        self.button_frame = self.addLabelFrame("Buttons")
         self.button_frame.Button("Button", self.handleButtonClick)
         self.button_frame.AccentButton("Accent Button", self.handleButtonClick)
         self.button_frame.ToggleButton("Toggle Button", variable=self.togglebuttonvar)
@@ -56,7 +56,7 @@ class App(TKMT.ThemedTKinterFrame):
         self.button_frame.MenuButton(menu, "Pick an option")
 
         # Create a Frame for input widgets
-        self.input_frame = self.addLabelFrame("InputMethods", col=1, rowspan=2)
+        self.input_frame = self.addLabelFrame("InputMethods", rowspan=2)
         self.textinputvar.trace_add('write', self.textupdate)
         self.input_frame.Entry(self.textinputvar, validatecommand=self.validateText)
         self.input_frame.NumericalSpinbox(0,100,5,self.spinboxnumvar)

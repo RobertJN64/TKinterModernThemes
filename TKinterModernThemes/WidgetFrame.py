@@ -2,11 +2,12 @@ from TKinterModernThemes.ThemeStyles import ThemeStyles
 from functools import partial as PARTIAL #for calling funcs with args
 from warnings import warn
 from tkinter import ttk
-from typing import List, Union
+from typing import List, Union, Tuple
 import math
 import tkinter as tk
 
-#TODO - example to show debug print and rowspan
+#TODO - matplotlib integration
+#TODO - rest of widgets
 
 #region validation funcs
 def isFloat(x):
@@ -90,15 +91,15 @@ def printRow(grid, i, longesttext):
     for col in range(0, len(row)):
         widget = row[col]
         if widget is not None:
-            s += centerText(str(widget), longesttext)
+            s += centerText(str(widget), longesttext[col])
             if widget.colspan > 1:
-                if col < len(grid)-1:
-                    grid[i + 1][col] = Widget(None, "", 0, 0, widget.rowspan, widget.colspan-1)
-                    s += " "
+                if col < len(grid[i]) - 1:
+                    grid[i][col+1] = Widget(None, "", 0, 0, widget.rowspan, widget.colspan-1)
+                s += " "
             else:
                 s += '|'
         else:
-            s += " " * longesttext + "|"
+            s += " " * longesttext[col] + "|"
     print(s)
 
 
@@ -112,25 +113,28 @@ def printSeperator(grid: List[List[Widget]], i, longesttext):
     for col in range(0, len(grid[0])):
         widget: Widget = row[col]
         if widget is None or widget.rowspan == 1:
-            s += "-" * longesttext
+            s += "-" * longesttext[col]
         else:
-            s += " " * longesttext
+            s += " " * longesttext[col]
             if i < len(grid):
                 grid[i][col] = Widget(None, "", 0, 0, widget.rowspan-1, widget.colspan)
         s += "+"
     print(s)
 
 def tabulate(widgets):
-    longesttext = 0
     maxrow = 0
     maxcol = 0
 
     for widget in widgets:
-        longesttext = max(len(str(widget)), longesttext)
         maxrow = max(widget.row, maxrow)
         maxcol = max(widget.col, maxcol)
 
-    longesttext += 2
+    longesttext = [0] * (maxcol + 1)
+    for widget in widgets:
+        longesttext[widget.col] = max(longesttext[widget.col], len(str(widget)))
+
+    for i in range(0, len(longesttext)):
+        longesttext[i] = max(longesttext[i] + 2, 3)
 
     grid: List[List] = []
     for i in range(0, maxrow+1):
@@ -170,12 +174,16 @@ class Notebook:
         self.notebook.add(tab, text=text)
         return widgetFrame
 
-    def makeResizable(self):
+    def makeResizable(self, recursive=True):
         for tab in self.tabs:
             for index in range(tab.grid_size()[0]):
                 tab.columnconfigure(index=index, weight=1)
             for index in range(tab.grid_size()[1]):
                 tab.rowconfigure(index=index, weight=1)
+
+        if recursive:
+            for frame in self.frames:
+                frame.makeResizable()
 
     def debugPrint(self, recursive=True):
         for frame in self.frames:
@@ -194,21 +202,59 @@ class WidgetFrame:
         self.text = name
         self.master = master
         self.rowcounters: List[int] = []
+        self.skiprows: List[List[int]] = [] #used for preventing colspan overlap
         self.widgets = WidgetList()
+        self.activecol = 0
+        
+    def setActiveCol(self, value):
+        """Set col for newly placed widgets to drop into"""
+        self.activecol = value
 
-    def getRow(self, row, col, rowspan) -> int:
+    def makeResizable(self, recursive=True):
+        for index in range(self.master.grid_size()[0]):
+            self.master.columnconfigure(index=index, weight=1)
+
+        for index in range(self.master.grid_size()[1]):
+            self.master.rowconfigure(index=index, weight=1)
+
+        if recursive:
+            for widget in self.widgets:
+                if type(widget.widget) in [Notebook, WidgetFrame]:
+                    widget.widget.makeResizable()
+
+    def getRow(self, row, col, rowspan, colspan) -> Tuple[int, int]:
+        if col is None:
+            col = self.activecol
+
         for _ in range(len(self.rowcounters), col + 1):
             self.rowcounters.append(0)
+            self.skiprows.append([])
 
         if row is None: #auto find row
             row = self.rowcounters[col]
-        if row is not None:
-            self.rowcounters[col] = row
-        self.rowcounters[col] += rowspan
-        return row
+            done = False
+            while not done:
+                done = True
+                for c in range(col, col+colspan):
+                    if c >= len(self.skiprows):
+                        self.skiprows.append([])
+
+                    if row in self.skiprows[c]:
+                        done = False
+                if not done:
+                    row += 1
+
+        self.rowcounters[col] = row + rowspan
+
+        for i in range(col, col+colspan):
+            if i < len(self.skiprows):
+                self.skiprows[i].append(row)
+            else:
+                self.skiprows.append([row])
+        return row, col
 
     #region Widget Frames
-    def addFrame(self, name: str, row: int = None, col: int = 0, padx=(20,20), pady=(20,20), sticky="nsew",
+    def addFrame(self, name: str, row: int = None, col: int = None, padx=(20,20), pady=(20,20), sticky="nsew",
                  rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a widget frame based around a ttk.Frame
@@ -227,12 +273,12 @@ class WidgetFrame:
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         widget = ttk.Frame(self.master, **gridkwargs)
         frame = WidgetFrame(widget, name)
-        row = self.getRow(row, col, rowspan)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, **gridkwargs)
         self.widgets.append(Widget(frame, "Widget Frame", row, col, rowspan, colspan, name))
         return frame
 
-    def addLabelFrame(self, text: str, row: int = None, col: int = 0, padx=(20, 20), pady=(20, 20), sticky="nsew",
+    def addLabelFrame(self, text: str, row: int = None, col: int = None, padx=(20, 20), pady=(20, 20), sticky="nsew",
                       rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a widget frame based around a ttk.Frame
@@ -251,7 +297,7 @@ class WidgetFrame:
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         widget = ttk.LabelFrame(self.master, text=text, **gridkwargs)
         frame = WidgetFrame(widget, text)
-        row = self.getRow(row, col, rowspan)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, **gridkwargs)
         self.widgets.append(Widget(frame, "Widget Frame", row, col, rowspan, colspan, text))
         return frame
@@ -285,8 +331,8 @@ class WidgetFrame:
         if disabled:
             widget.state(["disabled !alternate"])
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
         widgetname = "CheckButton"
         if style == ThemeStyles.CheckbuttonStyles.ToggleButton:
@@ -302,13 +348,13 @@ class WidgetFrame:
         return self.Checkbutton(text, variable, command, args, row, col, padx, pady, sticky,
                                 False, ThemeStyles.CheckbuttonStyles.ToggleButton, widgetkwargs, gridkwargs)
 
-    def SlideSwitch(self, text: str, variable: tk.Variable, command=None, args=(), row: int = None, col: int = 0,
+    def SlideSwitch(self, text: str, variable: tk.Variable, command=None, args=(), row: int = None, col: int = None,
                     padx=10, pady=10, sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
         """Wrapper function for creating a toggle button. All params same as checkbutton."""
         return self.Checkbutton(text, variable, command, args, row, col, padx, pady, sticky,
                                 False, ThemeStyles.CheckbuttonStyles.SlideSwitch, widgetkwargs, gridkwargs)
 
-    def Radiobutton(self, text: str, variable: tk.Variable, value, command=None, args=(), row: int = None, col: int = 0,
+    def Radiobutton(self, text: str, variable: tk.Variable, value, command=None, args=(), row: int = None, col: int = None,
                     padx=10, pady=10, sticky="nsew", disabled: bool = False, widgetkwargs: dict = None,
                     gridkwargs: dict = None):
         """
@@ -336,15 +382,15 @@ class WidgetFrame:
                                  command=partial(command, *args), state=state, **widgetkwargs)
 
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
 
         self.widgets.append(Widget(widget, "Radiobutton<" + str(value) + ">", row, col, rowspan, colspan, text,
                                    command=partial(command, *args)))
         return widget
 
-    def Seperator(self, row: int = None, col: int = 0, padx=10, pady=10, sticky="ew",
+    def Seperator(self, row: int = None, col: int = None, padx=10, pady=10, sticky="ew",
                   widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Adds a ttk.Seperator
@@ -361,13 +407,13 @@ class WidgetFrame:
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         widget = ttk.Separator(self.master, **widgetkwargs)
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
         self.widgets.append(Widget(widget, "Seperator", row, col, rowspan, colspan))
         return widget
 
-    def Button(self, text: str, command, args=(), row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
+    def Button(self, text: str, command, args=(), row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
                style=None, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Button widget
@@ -388,8 +434,8 @@ class WidgetFrame:
         widget = ttk.Button(self.master, text=text, command=partial(command, *args), style=style, **widgetkwargs)
 
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
 
         widgetname = "Button"
@@ -399,13 +445,13 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, widgetname, row, col, rowspan, colspan, text, command, args))
         return widget
 
-    def AccentButton(self, text: str, command, args=(), row: int = None, col: int = 0, padx=10, pady=10,
+    def AccentButton(self, text: str, command, args=(), row: int = None, col: int = None, padx=10, pady=10,
                      sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
         """Wrapper function for making an accent button. All params same as Button"""
         return self.Button(text, command, args, row, col, padx, pady, sticky,
                            ThemeStyles.ButtonStyles.AccentButton, widgetkwargs, gridkwargs)
 
-    def Entry(self, textvariable: tk.Variable, row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
+    def Entry(self, textvariable: tk.Variable, row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
               validatecommand=None, validatecommandargs=(), validatecommandmode='%P', invalidcommand=None,
               invalidcommandargs=(), validate='all', widgetkwargs: dict = None, gridkwargs: dict = None):
         """
@@ -433,15 +479,15 @@ class WidgetFrame:
                            invalidcommand=(invalidfunc, validatecommandmode), validate=validate, **widgetkwargs)
 
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
         self.widgets.append(Widget(widget, "TextInput", row, col, rowspan, colspan))
         return widget
 
     def NumericalSpinbox(self, lower: float, upper: float, increment: float, variable: tk.Variable,
                         validatecommand=isConstrainedFloat, validatecommandargs=(), validatecommandmode='%P',
-                        validate='focusout', row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
+                        validate='focusout', row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
                         widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Spinbox designed for numbers.
@@ -468,15 +514,15 @@ class WidgetFrame:
         widget = ttk.Spinbox(self.master, textvariable=variable, validatecommand=(validatefunc, validatecommandmode),
                              validate=validate, from_=lower, to=upper, increment=increment, **widgetkwargs)
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
         self.widgets.append(Widget(widget, "NumericalSpinbox" + str((lower, upper, increment)), row, col, rowspan, colspan))
         return widget
 
     def NonnumericalSpinbox(self, values: list, variable: tk.Variable, validatecommand=isMember,
                             validatecommandargs=(), validatecommandmode='%P', validate='focusout',
-                            row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew", wrap: bool = True,
+                            row: int = None, col: int = None, padx=10, pady=10, sticky="nsew", wrap: bool = True,
                             widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Spinbox designed for lists.
@@ -502,8 +548,8 @@ class WidgetFrame:
         widget = ttk.Spinbox(self.master, textvariable=variable, validatecommand=(validatefunc, validatecommandmode),
                              validate=validate, values=values, wrap=wrap, **widgetkwargs)
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky)
         name = "Spinbox"
         if len(str(values)) < 25:
@@ -540,8 +586,8 @@ class WidgetFrame:
             assert len(columnnames) == len(datacolumnnames), "Column params must be the same length"
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         if newframe:
             widgetFrame = ttk.Frame(self.master)
             widgetFrame.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
@@ -578,7 +624,7 @@ class WidgetFrame:
         return widget
 
     def OptionMenu(self, values: list, variable: tk.Variable, command=None, args=(), default=None, row: int=None,
-                   col: int = 0, padx=10, pady=10, sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
+                   col: int = None, padx=10, pady=10, sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.OptionMenu
 
@@ -597,8 +643,8 @@ class WidgetFrame:
         """
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         if default is None:
             default = values[0]
         widget = ttk.OptionMenu(self.master, variable, default, command=partial(command,*args), *values, **widgetkwargs)
@@ -609,7 +655,7 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, name, row, col, rowspan, colspan))
         return widget
 
-    def Combobox(self, values: list, variable: tk.Variable, default = 0, row: int = None, col: int = 0, padx=10,
+    def Combobox(self, values: list, variable: tk.Variable, default = 0, row: int = None, col: int = None, padx=10,
                  pady=10, sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Combobox (editable drop down menu)
@@ -628,8 +674,8 @@ class WidgetFrame:
 
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget = ttk.Combobox(self.master, textvariable = variable, values=values, **widgetkwargs)
         widget.current(default)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
@@ -639,7 +685,7 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, name, row, col, rowspan, colspan))
         return widget
 
-    def MenuButton(self, menu: tk.Menu, defaulttext: str, row: int = None, col: int = 0, padx=10,
+    def MenuButton(self, menu: tk.Menu, defaulttext: str, row: int = None, col: int = None, padx=10,
                    pady=10, sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.MenuButton
@@ -657,14 +703,14 @@ class WidgetFrame:
 
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget = ttk.Menubutton(self.master, text=defaulttext, menu=menu, **widgetkwargs)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
         self.widgets.append(Widget(widget, "MenuButton", row, col, rowspan, colspan, defaulttext))
         return widget
 
-    def Notebook(self, name, row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
+    def Notebook(self, name, row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
                  widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Notebook
@@ -680,13 +726,26 @@ class WidgetFrame:
         """
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         rowspan = gridkwargs.get("rowspan", 1)
-        colspan = gridkwargs.get("colspan", 1)
-        row = self.getRow(row, col, rowspan)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
         widget = Notebook(self.master, name, **widgetkwargs)
         widget.notebook.grid(row = row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
         self.widgets.append(Widget(widget, "Notebook", row, col, rowspan, colspan, name))
 
         return widget
+
+    def Blank(self, name = "Blank", row: int = None, col: int = None, rowspan=1, colspan=1):
+        """
+        Adds a blank space to prevent widget placement
+
+        :param name: for debugging
+        :param row: Passed to widget, defaults to +1 of last item in col
+        :param col: Passed to widget, defaults to 0
+        :param rowspan: Passed to widget
+        :param colspan: Passed to widget
+        """
+        row, col = self.getRow(row, col, rowspan, colspan)
+        self.widgets.append(Widget(None, name, row, col, rowspan, colspan))
 
     # endregion
     def debugPrint(self, recursive=True):

@@ -66,16 +66,13 @@ class ThemedTKinterFrame(WidgetFrame):
 
         super().__init__(self.root, "Master Frame")
 
-    def run(self, cleanresize=True):
+    def run(self, cleanresize=True, recursiveResize=True):
         """
         Runs the main loop of the tkinter frame. Also does some basic rendering stuff, such as packing
         and resizing the window.
         """
         if cleanresize:
-            for index in range(self.root.grid_size()[0]):
-                self.root.columnconfigure(index=index, weight=1)
-            for index in range(self.root.grid_size()[1]):
-                self.root.rowconfigure(index=index, weight=1)
+            self.makeResizable(recursiveResize)
 
         self.root.update()
         self.root.minsize(self.root.winfo_width(), self.root.winfo_height())

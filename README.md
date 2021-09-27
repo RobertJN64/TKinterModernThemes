@@ -36,7 +36,7 @@ Sun-valley is designed to look like Windows 11.
 ![](TKinterModernThemes/images/sun-valleylight.jpg)
 
 ### Azure
-Azure is similar to forest, with a blue as the accent color.
+Azure is similar to park, with a blue as the accent color.
 
 ![](TKinterModernThemes/images/azuredark.jpg)
 ![](TKinterModernThemes/images/azurelight.jpg)
@@ -51,7 +51,7 @@ These themes can be added by creating a themed frame.
 A theme and mode (dark/light) can be specified.
 If you need multiple windows, all but one should be marked as topLevel.
 
-The frame for the app can be accessed be self.root, but WidgetFrames
+The frame for the app can be accessed by self.root, but WidgetFrames
 provide a cleaner alternative.
 
 ## Widget Frames
@@ -71,7 +71,7 @@ class App(TKMT.ThemedTKinterFrame):
     def __init__(self):
         super().__init__(str("TITLE"), str("park"), str("dark"))
         self.button_frame = self.addLabelFrame(str("Frame Label"))
-        self.Button(str("Button Text"), buttonCMD) #the button is dropped straight into the frame
+        self.button_frame.Button(str("Button Text"), buttonCMD) #the button is dropped straight into the frame
         self.run()
 
 App()
@@ -80,10 +80,14 @@ App()
 The widgets have params for the common use cases. If more params are needed, they can be
 passed as dicts to **widgetkwargs and **gridkwargs respectively.
 
-WidgetFrames can be combined with normal tkinter use.
+WidgetFrames can be combined with normal tkinter use. Note: debugPrint() will only
+display widgets created from the WidgetFrame. Custom created
+widgets can be linked to the WidgetFrame by appending them to
+`WidgetFrame.widgets.widgetlist` (this also allows for overlap checking)
 
 ```python
 import TKinterModernThemes as TKMT
+from TKinterModernThemes.WidgetFrame import Widget
 from tkinter import ttk
 
 def buttonCMD():
@@ -103,6 +107,11 @@ class App(TKMT.ThemedTKinterFrame):
 
         button = ttk.Button(self.master, text="Button outside frame!")
         button.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+        
+        button = ttk.Button(self.master, text="debugPrint() finds this button")
+        button.grid(row=3, column=0, padx=10, pady=10, sticky='nsew')
+        self.widgets.widgetlist.append(Widget(button, str("Button"), 3, 0, 1, 1,
+                                              "debugPrint() finds this button"))
         self.debugPrint()
         self.run()
 
@@ -110,8 +119,7 @@ if __name__ == "__main__":
     App(str("park"), str("dark"))
 ```
 
-WidgetFrames will add a new item to each column below the last placed item
-in that column.
+WidgetFrames adds new items to each column below the last placed item in that column.
 WidgetFrame.debugPrint() can be used to see how the widget is attempting
 to place each item.
 Items can be manually placed with the row and col params. If two items overlap, 
@@ -136,7 +144,7 @@ with parameters in `super().__init__()`
 By default, themeconfig.json overrides command line args, which overrides manually passed in themes,
 which override the defaults.
 
-## Widgets:
+## New Widgets:
 
 ### SlideSwitch
 

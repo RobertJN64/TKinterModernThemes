@@ -46,6 +46,15 @@ class App(TKMT.ThemedTKinterFrame):
         self.button_frame.AccentButton("Accent Button", self.handleButtonClick)
         self.button_frame.ToggleButton("Toggle Button", variable=self.togglebuttonvar)
 
+        # Menu for the Menubutton
+        menu = tk.Menu(self.master)
+        menu.add_command(label="Menu item 1", command=partial(self.menuprint, "1"))
+        menu.add_command(label="Menu item 2", command=partial(self.menuprint, "2"))
+        menu.add_command(label="Menu item 3", command=partial(self.menuprint, "3"))
+        menu.add_command(label="Menu item 4", command=partial(self.menuprint, "4"))
+
+        self.button_frame.MenuButton(menu, "Pick an option")
+
         # Create a Frame for input widgets
         self.input_frame = self.addLabelFrame("InputMethods", col=1, rowspan=2)
         self.textinputvar.trace_add('write', self.textupdate)
@@ -53,20 +62,6 @@ class App(TKMT.ThemedTKinterFrame):
         self.input_frame.NumericalSpinbox(0,100,5,self.spinboxnumvar)
         self.input_frame.NonnumericalSpinbox(['red', 'green', 'blue'], self.spinboxcolorvar, wrap=True)
         self.input_frame.Combobox(["You", "can", "edit", "these", "options."], self.comboboxvar)
-
-        # Menu for the Menubutton
-        self.menu = tk.Menu(self.master)
-        self.menu.add_command(label="Menu item 1", command=partial(self.menuprint, "1"))
-        self.menu.add_command(label="Menu item 2", command=partial(self.menuprint, "2"))
-        self.menu.add_command(label="Menu item 3", command=partial(self.menuprint, "3"))
-        self.menu.add_command(label="Menu item 4", command=partial(self.menuprint, "4"))
-
-
-        # Menubutton
-        #self.menubutton = ttk.Menubutton(self.widgets_frame, text="Pick an option", menu=self.menu, direction="below")
-        #self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
-
-        # OptionMenu
         self.input_frame.OptionMenu(self.option_menu_list, self.optionmenuvar, lambda x: print("Menu:",x))
 
         self.displayframe = self.addLabelFrame("Display Frame", col=2, rowspan=3)
@@ -76,49 +71,46 @@ class App(TKMT.ThemedTKinterFrame):
             tree = json.load(f)
         self.displayframe.Treeview(['Files', 'Purpose'], [120,120], 10, tree, 'subfiles', ['name', 'purpose'])
 
+        #TODO - paned window
 
-            # def notebookPane():
-            #     # Notebook, pane #2
-            #
-            #     self.notebook = ttk.Notebook(self.pane_2)
-            #     self.notebook.pack(fill="both", expand=True)
-            #
-            #     # Tab #1
-            #     self.tab_1 = ttk.Frame(self.notebook)
-            #     for col in [0, 1]:
-            #         self.tab_1.columnconfigure(index=col, weight=1)
-            #         self.tab_1.rowconfigure(index=col, weight=1)
-            #     self.notebook.add(self.tab_1, text="Tab 1")
-            #
-            #     # Scale
-            #     self.scale = ttk.Scale(self.tab_1, from_=100, to=0, variable=self.slidervar)
-            #     self.scale.grid(row=0, column=0, padx=(20, 10), pady=(20, 0), sticky="ew")
-            #
-            #     # Progressbar
-            #     self.progress = ttk.Progressbar(self.tab_1, value=0, variable=self.slidervar, mode="determinate")
-            #     self.progress.grid(row=1, column=0, padx=(10, 20), pady=(20, 0), sticky="ew")
-            #
-            #     # Tab #2
-            #     self.tab_2 = ttk.Frame(self.notebook)
-            #     self.notebook.add(self.tab_2, text="Tab 2")
-            #
-            #     # Label
-            #     self.label = ttk.Label(self.tab_2, text="Label text here.", justify="center",
-            #                            font=("-size", 15, "-weight", "bold"),)
-            #     self.label.grid(row=0, column=0, pady=10)
-            #
-            #     # Tab #3
-            #     self.tab_3 = ttk.Frame(self.notebook)
-            #     self.notebook.add(self.tab_3, text="Tab 3")
-            #
-            #     self.textbox = tk.Label(self.tab_3, text='Normal text here.')
-            #     self.textbox.grid(row=0, column=0, pady=10, padx=5)
-            #
-            #     self.themelabel = ttk.Label(self, text=self.theme.capitalize() + " theme: " + self.mode,
-            #                                 font=('-size', 15, '-weight', 'bold'))
-            #     self.themelabel.grid(row=3, column=2)
-            #notebookPane()
-        #buildTreeView()
+        self.notebook = ttk.Notebook(self.displayframe.master)
+        self.notebook.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+
+        # Tab #1
+        self.tab_1 = ttk.Frame(self.notebook)
+        for col in [0, 1]:
+            self.tab_1.columnconfigure(index=col, weight=1)
+            self.tab_1.rowconfigure(index=col, weight=1)
+        self.notebook.add(self.tab_1, text="Tab 1")
+
+        # Scale
+        self.scale = ttk.Scale(self.tab_1, from_=100, to=0, variable=self.slidervar)
+        self.scale.grid(row=0, column=0, padx=(20, 10), pady=(20, 0), sticky="ew")
+
+        # Progressbar
+        self.progress = ttk.Progressbar(self.tab_1, value=0, variable=self.slidervar, mode="determinate")
+        self.progress.grid(row=1, column=0, padx=(10, 20), pady=(20, 0), sticky="ew")
+
+        # Tab #2
+        self.tab_2 = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_2, text="Tab 2")
+
+        # Label
+        self.label = ttk.Label(self.tab_2, text="Label text here.", justify="center",
+                               font=("-size", 15, "-weight", "bold"),)
+        self.label.grid(row=0, column=0, pady=10)
+
+        # Tab #3
+        self.tab_3 = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_3, text="Tab 3")
+
+        self.textbox = tk.Label(self.tab_3, text='Normal text here.')
+        self.textbox.grid(row=0, column=0, pady=10, padx=5)
+
+        self.themelabel = ttk.Label(self.displayframe.master, text=self.theme.capitalize() + " theme: " + self.mode,
+                                    font=('-size', 15, '-weight', 'bold'))
+        self.themelabel.grid(row=3, column=0)
+
         self.debugPrint()
         self.run()
 

@@ -51,18 +51,71 @@ These themes can be added by creating a themed frame.
 A theme and mode (dark/light) can be specified.
 If you need multiple windows, all but one should be marked as topLevel.
 
+The frame for the app can be accessed be self.root, but WidgetFrames
+provide a cleaner alternative.
+
+## Widget Frames
+
+In this library, everything that supports adding widgets is a widget frame.
+Instead of creating a widget and later adding it to a frame, widget frames combine these
+steps. They also provide much better defaulting and doc strings then default tkinter.
 
 ## Example:
 ```python
 import TKinterModernThemes as TKMT
 
+def buttonCMD():
+        print("Button clicked!")
+
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self):
         super().__init__(str("TITLE"), str("park"), str("dark"))
-        
-        #add your widgets here
+        self.button_frame = self.addLabelFrame(str("Frame Label"))
+        self.Button(str("Button Text"), buttonCMD) #the button is dropped straight into the frame
         self.run()
+
+App()
 ```
+
+The widgets have params for the common use cases. If more params are needed, they can be
+passed as dicts to **widgetkwargs and **gridkwargs respectively.
+
+WidgetFrames can be combined with normal tkinter use.
+
+```python
+import TKinterModernThemes as TKMT
+from tkinter import ttk
+
+def buttonCMD():
+        print("Button clicked!")
+
+class App(TKMT.ThemedTKinterFrame):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
+        super().__init__(str("TITLE"), theme, mode, usecommandlineargs, usethemeconfigfile, topLevel)
+        self.Button(str("Auto placed button!"), buttonCMD) #placed at row 0, col 0
+
+        self.button_frame = self.addLabelFrame(str("Frame Label")) #placed at row 1, col 0
+
+        self.button_frame.Button(str("Button Text"), buttonCMD) #the button is dropped straight into the frame
+
+        button = ttk.Button(self.button_frame.master, text="Button in frame!")
+        button.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+
+        button = ttk.Button(self.master, text="Button outside frame!")
+        button.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+        self.debugPrint()
+        self.run()
+
+if __name__ == "__main__":
+    App(str("park"), str("dark"))
+```
+
+WidgetFrames will add a new item to each column below the last placed item
+in that column.
+WidgetFrame.debugPrint() can be used to see how the widget is attempting
+to place each item.
+Items can be manually placed with the row and col params. If two items overlap, 
+a warning will be printed upon widget creation.
 
 ## Setting the theme:
 
@@ -90,19 +143,19 @@ which override the defaults.
 A variant of a checkbox that looks like a switch.
 ```python
 import TKinterModernThemes as TKMT
-from tkinter import ttk
 import tkinter as tk
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self):
-        super().__init__(str("Switch"), str("park"), str("dark"))
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
+        super().__init__(str("Switch"), theme, mode, usecommandlineargs=usecommandlineargs,
+                         useconfigfile=usethemeconfigfile, topLevel=topLevel)
+        self.switchframe = self.addLabelFrame(str("Switch Frame"))
         self.switchvar = tk.BooleanVar()
-        self.switch = ttk.Checkbutton(self, text="Switch", variable=self.switchvar, style=TKMT.ThemeStyles.SlideSwitch)
-        self.switch.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
-        #add your widgets here
+        self.switchframe.SlideSwitch("Switch", self.switchvar)
         self.run()
 
-App()
+if __name__ == "__main__":
+    App(str("park"), str("dark"))
 ```
 
 
@@ -111,20 +164,20 @@ App()
 A variant of a checkbox that looks like a button.
 ```python
 import TKinterModernThemes as TKMT
-from tkinter import ttk
 import tkinter as tk
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self):
-        super().__init__(str("Toggle button"), str("park"), str("dark"))
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
+        super().__init__(str("Toggle button"), theme, mode,
+                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
+        self.togglebuttonframe = self.addLabelFrame(str("Toggle Button Frame"))
         self.togglebuttonvar = tk.BooleanVar()
         # Togglebutton
-        self.togglebutton = ttk.Checkbutton(self, text="Toggle button", style=TKMT.ThemeStyles.ToggleButton,variable=self.togglebuttonvar)
-        self.togglebutton.grid(row=2, column=0, padx=5, pady=10, sticky="nsew")
-        #add your widgets here
+        self.togglebutton = self.togglebuttonframe.ToggleButton(text="Toggle button", variable=self.togglebuttonvar)
         self.run()
 
-App()
+if __name__ == "__main__":
+    App(str("park"), str("dark"))
 ```
 
 
@@ -133,21 +186,21 @@ App()
 A button that has a default color of a clicked button.
 ```python
 import TKinterModernThemes as TKMT
-from tkinter import ttk
 
 def handleButtonClick():
     print("Button clicked!")
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self):
-        super().__init__(str("Accent Button"), str("park"), str("dark"))
-        self.accentbutton = ttk.Button(self, text="Accent button", style=TKMT.ThemeStyles.AccentButton, 
-                                       command=handleButtonClick)
-        self.accentbutton.grid(row=1, column=0, padx=5, pady=10, sticky="nsew")
-        #add your widgets here
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
+        super().__init__(str("Accent button"), theme, mode,
+                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
+
+        self.frame = self.addLabelFrame(str("Accent Button Frame"))
+        self.frame.AccentButton("Accent Button", handleButtonClick)
         self.run()
 
-App()
+if __name__ == "__main__":
+    App(str("park"), str("dark"))
 ```
 
 See [allwidgets.py](TKinterModernThemes/examples/allwidgets.py) for info on each widget.

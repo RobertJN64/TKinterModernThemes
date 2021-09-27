@@ -5,9 +5,11 @@ import TKinterModernThemes.examples.allwidgets as demo1
 import TKinterModernThemes.examples.switch as demo2
 import TKinterModernThemes.examples.togglebutton as demo3
 import TKinterModernThemes.examples.accentbutton as demo4
+import TKinterModernThemes.examples.combinationdemo as demo5
 
-demos = [demo1, demo2, demo3, demo4]
-names = ["All Widgets Demo", "Slide Switch Demo", "Toggle Button Demo", "Accent Button Demo"]
+demos = [demo1, demo2, demo3, demo4, demo5]
+names = ["All Widgets Demo", "Slide Switch Demo", "Toggle Button Demo", "Accent Button Demo",
+         "Combination Demo"]
 
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self):

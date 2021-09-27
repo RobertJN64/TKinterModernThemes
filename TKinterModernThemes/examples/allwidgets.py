@@ -73,39 +73,28 @@ class App(TKMT.ThemedTKinterFrame):
 
         #TODO - paned window
 
-        self.notebook = ttk.Notebook(self.displayframe.master)
-        self.notebook.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+        self.notebook = self.displayframe.Notebook("Test Notebook")
+        self.tab_1 = self.notebook.addTab("Tab 1")
 
-        # Tab #1
-        self.tab_1 = ttk.Frame(self.notebook)
-        for col in [0, 1]:
-            self.tab_1.columnconfigure(index=col, weight=1)
-            self.tab_1.rowconfigure(index=col, weight=1)
-        self.notebook.add(self.tab_1, text="Tab 1")
-
-        # Scale
-        self.scale = ttk.Scale(self.tab_1, from_=100, to=0, variable=self.slidervar)
+        self.scale = ttk.Scale(self.tab_1.master, from_=100, to=0, variable=self.slidervar)
         self.scale.grid(row=0, column=0, padx=(20, 10), pady=(20, 0), sticky="ew")
 
-        # Progressbar
-        self.progress = ttk.Progressbar(self.tab_1, value=0, variable=self.slidervar, mode="determinate")
+        self.progress = ttk.Progressbar(self.tab_1.master, value=0, variable=self.slidervar, mode="determinate")
         self.progress.grid(row=1, column=0, padx=(10, 20), pady=(20, 0), sticky="ew")
 
-        # Tab #2
-        self.tab_2 = ttk.Frame(self.notebook)
-        self.notebook.add(self.tab_2, text="Tab 2")
+        self.tab_2 = self.notebook.addTab("Tab 2")
 
-        # Label
-        self.label = ttk.Label(self.tab_2, text="Label text here.", justify="center",
-                               font=("-size", 15, "-weight", "bold"),)
+        self.label = ttk.Label(self.tab_2.master, text="Label text here.", justify="center",
+                               font=("-size", 15, "-weight", "bold"), )
         self.label.grid(row=0, column=0, pady=10)
 
-        # Tab #3
-        self.tab_3 = ttk.Frame(self.notebook)
-        self.notebook.add(self.tab_3, text="Tab 3")
+        self.tab_3 = self.notebook.addTab("Tab 3")
 
-        self.textbox = tk.Label(self.tab_3, text='Normal text here.')
+        self.textbox = tk.Label(self.tab_3.master, text='Normal text here.')
         self.textbox.grid(row=0, column=0, pady=10, padx=5)
+
+        self.notebook.makeResizable()
+
 
         self.themelabel = ttk.Label(self.displayframe.master, text=self.theme.capitalize() + " theme: " + self.mode,
                                     font=('-size', 15, '-weight', 'bold'))

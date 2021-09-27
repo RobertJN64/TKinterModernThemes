@@ -6,6 +6,8 @@ from typing import List, Union
 import math
 import tkinter as tk
 
+#TODO - example to show debug print and rowspan
+
 #region validation funcs
 def isFloat(x):
     try:
@@ -52,7 +54,7 @@ class Widget:
             self.commandstr = " -> " + command.__name__ + str(args)
 
     def __str__(self):
-        if type(self.widget) == WidgetFrame:
+        if type(self.widget) in [WidgetFrame, Notebook]:
             return self.name + ": " + self.text
         if self.text == "":
             return self.name + self.commandstr
@@ -145,6 +147,39 @@ def tabulate(widgets):
     print()
 #endregion
 #endregion
+
+class Notebook:
+    def __init__(self, master, name, **widgetkwargs):
+        """Creates a widget frame based notebook. Call make resizable to make notebook resizable."""
+        self.notebook = ttk.Notebook(master, **widgetkwargs)
+        self.tabs = []
+        self.frames = []
+        self.name = name
+
+    def addTab(self, text):
+        """
+        Adds a tab to the notebook. Text is used as label. Returns a WidgetFrame
+
+        :param text: Text to label tab
+        """
+
+        tab = ttk.Frame(self.notebook)
+        self.tabs.append(tab)
+        widgetFrame = WidgetFrame(tab, self.name + " Tab: " + text)
+        self.frames.append(widgetFrame)
+        self.notebook.add(tab, text=text)
+        return widgetFrame
+
+    def makeResizable(self):
+        for tab in self.tabs:
+            for index in range(tab.grid_size()[0]):
+                tab.columnconfigure(index=index, weight=1)
+            for index in range(tab.grid_size()[1]):
+                tab.rowconfigure(index=index, weight=1)
+
+    def debugPrint(self, recursive=True):
+        for frame in self.frames:
+            frame.debugPrint(recursive)
 
 class WidgetFrame:
     def __init__(self, master, name):
@@ -332,7 +367,7 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, "Seperator", row, col, rowspan, colspan))
         return widget
 
-    def Button(self, text: str, command=None, args=(), row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
+    def Button(self, text: str, command, args=(), row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
                style=None, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Button widget
@@ -364,7 +399,7 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, widgetname, row, col, rowspan, colspan, text, command, args))
         return widget
 
-    def AccentButton(self, text: str, command=None, args=(), row: int = None, col: int = 0, padx=10, pady=10,
+    def AccentButton(self, text: str, command, args=(), row: int = None, col: int = 0, padx=10, pady=10,
                      sticky="nsew", widgetkwargs: dict = None, gridkwargs: dict = None):
         """Wrapper function for making an accent button. All params same as Button"""
         return self.Button(text, command, args, row, col, padx, pady, sticky,
@@ -629,11 +664,35 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, "MenuButton", row, col, rowspan, colspan, defaulttext))
         return widget
 
+    def Notebook(self, name, row: int = None, col: int = 0, padx=10, pady=10, sticky="nsew",
+                 widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Creates a ttk.Notebook
+
+        :param name: Name for debugging
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid
+        :param widgetkwargs: Passed to widget creation
+        :param gridkwargs: Passed to grid placement
+        """
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        rowspan = gridkwargs.get("rowspan", 1)
+        colspan = gridkwargs.get("colspan", 1)
+        row = self.getRow(row, col, rowspan)
+        widget = Notebook(self.master, name, **widgetkwargs)
+        widget.notebook.grid(row = row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        self.widgets.append(Widget(widget, "Notebook", row, col, rowspan, colspan, name))
+
+        return widget
+
     # endregion
     def debugPrint(self, recursive=True):
         subframes = []
         for widget in self.widgets:
-            if type(widget.widget) == WidgetFrame:
+            if type(widget.widget) in [WidgetFrame, Notebook]:
                 subframes.append(widget)
 
         print("Widget Frame: " + self.text)

@@ -1,7 +1,6 @@
 import TKinterModernThemes as TKMT
 from functools import partial
 import tkinter as tk
-from tkinter import ttk
 import json
 
 class App(TKMT.ThemedTKinterFrame):
@@ -23,7 +22,7 @@ class App(TKMT.ThemedTKinterFrame):
         self.option_menu_list = ["a", "b", "c", "d"]
         self.optionmenuvar = tk.StringVar(value=self.option_menu_list[0])
 
-        self.slidervar = tk.IntVar(value=50)
+        self.slidervar = tk.IntVar(value=25)
 
         self.check_frame = self.addLabelFrame("CheckButtons")
         self.check_frame.Checkbutton("Unchecked", self.checkbox1, self.printcheckboxvars, (1,))
@@ -75,30 +74,16 @@ class App(TKMT.ThemedTKinterFrame):
 
         self.notebook = self.displayframe.Notebook("Test Notebook")
         self.tab_1 = self.notebook.addTab("Tab 1")
-
-        self.scale = ttk.Scale(self.tab_1.master, from_=100, to=0, variable=self.slidervar)
-        self.scale.grid(row=0, column=0, padx=(20, 10), pady=(20, 0), sticky="ew")
-
-        self.progress = ttk.Progressbar(self.tab_1.master, value=0, variable=self.slidervar, mode="determinate")
-        self.progress.grid(row=1, column=0, padx=(10, 20), pady=(20, 0), sticky="ew")
+        self.tab_1.Scale(100, 0, self.slidervar)
+        self.tab_1.Progressbar(self.slidervar, mode="indeterminate")
 
         self.tab_2 = self.notebook.addTab("Tab 2")
-
-        self.label = ttk.Label(self.tab_2.master, text="Label text here.", justify="center",
-                               font=("-size", 15, "-weight", "bold"), )
-        self.label.grid(row=0, column=0, pady=10)
+        self.tab_2.Label("Label text here.")
 
         self.tab_3 = self.notebook.addTab("Tab 3")
+        self.tab_3.Text("Normal text here.")
 
-        self.textbox = tk.Label(self.tab_3.master, text='Normal text here.')
-        self.textbox.grid(row=0, column=0, pady=10, padx=5)
-
-        self.notebook.makeResizable()
-
-
-        self.themelabel = ttk.Label(self.displayframe.master, text=self.theme.capitalize() + " theme: " + self.mode,
-                                    font=('-size', 15, '-weight', 'bold'))
-        self.themelabel.grid(row=3, column=0)
+        self.displayframe.Label(self.theme.capitalize() + " theme: " + self.mode)
 
         self.debugPrint()
         self.run()

@@ -22,6 +22,9 @@ def isConstrainedFloat(lower, upper, x):
 
 def isMember(values, x):
     return x in values
+
+def adjust(lower, inputvar, pbvar, _var, _indx, _mode):
+    pbvar.set(inputvar.get() - lower)
 #endregion
 #region help funcs
 def partial(command, *args):
@@ -174,7 +177,7 @@ class Notebook:
         self.notebook.add(tab, text=text)
         return widgetFrame
 
-    def makeResizable(self, recursive=True):
+    def makeResizable(self, recursive=True, onlyFrames=True):
         for tab in self.tabs:
             for index in range(tab.grid_size()[0]):
                 tab.columnconfigure(index=index, weight=1)
@@ -183,7 +186,7 @@ class Notebook:
 
         if recursive:
             for frame in self.frames:
-                frame.makeResizable()
+                frame.makeResizable(onlyFrames=onlyFrames)
 
     def debugPrint(self, recursive=True):
         for frame in self.frames:
@@ -210,17 +213,23 @@ class WidgetFrame:
         """Set col for newly placed widgets to drop into"""
         self.activecol = value
 
-    def makeResizable(self, recursive=True):
-        for index in range(self.master.grid_size()[0]):
-            self.master.columnconfigure(index=index, weight=1)
+    def makeResizable(self, recursive=True, onlyFrames=True):
+        allFrames = True
+        for widget in self.widgets:
+            if type(widget.widget) not in [Notebook, WidgetFrame, ttk.Separator]:
+                allFrames = False
 
-        for index in range(self.master.grid_size()[1]):
-            self.master.rowconfigure(index=index, weight=1)
+        if allFrames or not onlyFrames:
+            for index in range(self.master.grid_size()[0]):
+                self.master.columnconfigure(index=index, weight=1)
+
+            for index in range(self.master.grid_size()[1]):
+                self.master.rowconfigure(index=index, weight=1)
 
         if recursive:
             for widget in self.widgets:
                 if type(widget.widget) in [Notebook, WidgetFrame]:
-                    widget.widget.makeResizable()
+                    widget.widget.makeResizable(onlyFrames=onlyFrames)
 
     def getRow(self, row, col, rowspan, colspan) -> Tuple[int, int]:
         if col is None:
@@ -354,8 +363,8 @@ class WidgetFrame:
         return self.Checkbutton(text, variable, command, args, row, col, padx, pady, sticky,
                                 False, ThemeStyles.CheckbuttonStyles.SlideSwitch, widgetkwargs, gridkwargs)
 
-    def Radiobutton(self, text: str, variable: tk.Variable, value, command=None, args=(), row: int = None, col: int = None,
-                    padx=10, pady=10, sticky="nsew", disabled: bool = False, widgetkwargs: dict = None,
+    def Radiobutton(self, text: str, variable: tk.Variable, value, command=None, args=(), row: int = None,
+                    col: int = None, padx=10, pady=10, sticky="nsew", disabled: bool = False, widgetkwargs: dict = None,
                     gridkwargs: dict = None):
         """
         Creates a ttk.Radiobutton widget
@@ -517,7 +526,8 @@ class WidgetFrame:
         colspan = gridkwargs.get("columnspan", 1)
         row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
-        self.widgets.append(Widget(widget, "NumericalSpinbox" + str((lower, upper, increment)), row, col, rowspan, colspan))
+        self.widgets.append(Widget(widget, "NumericalSpinbox" + str((lower, upper, increment)),
+                                   row, col, rowspan, colspan))
         return widget
 
     def NonnumericalSpinbox(self, values: list, variable: tk.Variable, validatecommand=isMember,
@@ -746,6 +756,120 @@ class WidgetFrame:
         """
         row, col = self.getRow(row, col, rowspan, colspan)
         self.widgets.append(Widget(None, name, row, col, rowspan, colspan))
+
+    def Label(self, text: str, justify='center', size=15, weight='bold', fontargs=(), row: int = None, col: int = None,
+              padx=10, pady=10, sticky=None, widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Creates a ttk.label with a large font and bold text
+
+        :param text: text to be displayed
+        :param justify: text posistion
+        :param size: font size
+        :param weight: font weight
+        :param fontargs: additional font args
+        :param row: Passed to widget, defaults to +1 of last item in col
+        :param col: Passed to widget, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid - default None for justification to work
+        :param widgetkwargs: Passed to widget creation
+        :param gridkwargs: Passed to grid placement
+        """
+
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        rowspan = gridkwargs.get("rowspan", 1)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
+        font = ('-size', size, '-weight', weight) + fontargs
+        widget = ttk.Label(self.master, text=text, justify=justify, font=font, **widgetkwargs)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        self.widgets.append(Widget(widget, "Label: ", row, col, rowspan, colspan, text))
+
+        return widget
+
+    def Text(self, text: str, justify='center', fontargs=(), row: int = None, col: int = None,
+              padx=10, pady=10, sticky=None, widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Creates a ttk.label with normal text
+
+        :param text: text to be displayed
+        :param justify: text posistion
+        :param fontargs: additional font args
+        :param row: Passed to widget, defaults to +1 of last item in col
+        :param col: Passed to widget, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid - default None for justification to work
+        :param widgetkwargs: Passed to widget creation
+        :param gridkwargs: Passed to grid placement
+        """
+
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        rowspan = gridkwargs.get("rowspan", 1)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
+        widget = ttk.Label(self.master, text=text, justify=justify, font=fontargs, **widgetkwargs)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        self.widgets.append(Widget(widget, "Text: ", row, col, rowspan, colspan, text))
+
+        return widget
+
+    def Scale(self, lower: float, upper: float, variable: tk.Variable, row: int = None,
+              col: int = None, padx=10, pady=10, sticky="ew", widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Creates a ttk.Scale (horizontal only, vertical is not supported with these themes)
+
+        :param lower: Min value
+        :param upper: Max value
+        :param variable: Variable to hold value
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid
+        :param widgetkwargs: Passed to widget creation
+        :param gridkwargs: Passed to grid placement
+        """
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        widget = ttk.Scale(self.master, variable=variable, from_=lower, to=upper, **widgetkwargs)
+        rowspan = gridkwargs.get("rowspan", 1)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        self.widgets.append(Widget(widget, "Scale" + str((lower, upper)), row, col, rowspan, colspan))
+        return widget
+
+    def Progressbar(self, variable: tk.Variable, mode="determinate", lower=0, upper=100, row: int = None,
+                    col: int = None, padx=10, pady=10, sticky="ew", widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Creates a ttk.Progressbar. If lower is not 0, it will link a second variable for processing
+
+        :param variable: tk.Variable to control progressbar
+        :param mode: "determinate" for variable control, "indetermiante" for animation
+        :param lower: min value (0 is highly recommended)
+        :param upper: max value
+        :param row: passed to grid
+        :param col: passed to grid
+        :param padx: passed to grid
+        :param pady: passed to grid
+        :param sticky: passed to grid
+        :param widgetkwargs: passed to widget
+        :param gridkwargs: passed to grid
+        """
+
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        if lower != 0:
+            var = tk.DoubleVar(value=variable.get() - lower)
+            variable.trace_add("write", partial(adjust, lower, variable, var))
+        else:
+            var = variable
+        widget = ttk.Progressbar(self.master, mode=mode, variable=var, maximum = upper - lower, **widgetkwargs)
+        rowspan = gridkwargs.get("rowspan", 1)
+        colspan = gridkwargs.get("columnspan", 1)
+        row, col = self.getRow(row, col, rowspan, colspan)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        self.widgets.append(Widget(widget, "Progressbar" + str((lower, upper)), row, col, rowspan, colspan))
+        return widget
 
     # endregion
     def debugPrint(self, recursive=True):

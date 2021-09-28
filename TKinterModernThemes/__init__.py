@@ -76,7 +76,7 @@ class ThemedTKinterFrame(WidgetFrame):
         :param onlyFrames: Only resize frame rows (makes widgets look better)
         """
         if cleanresize:
-            self.makeResizable(recursiveResize, onlyFrames=True)
+            self.makeResizable(recursiveResize, onlyFrames=onlyFrames)
 
         self.root.update()
         self.root.minsize(self.root.winfo_width(), self.root.winfo_height())

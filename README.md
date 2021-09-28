@@ -144,6 +144,36 @@ with parameters in `super().__init__()`
 By default, themeconfig.json overrides command line args, which overrides manually passed in themes,
 which override the defaults.
 
+## Notebooks and Paned Windows
+
+Notebooks and paned windows have been modified to include
+widget frame capabilities.
+
+```python
+import TKinterModernThemes as TKMT
+
+class App(TKMT.ThemedTKinterFrame):
+    def __init__(self):
+        super().__init__(str("TKinter Custom Themes Demo"))
+        
+        self.panedWindow = self.PanedWindow("Paned Window Test")
+        self.pane1 = self.panedWindow.addWindow() #pane1 is a widget frame
+
+        self.notebook = self.pane1.Notebook("Notebook Test")
+        self.tab1 = self.notebook.addTab("Tab Title") #tab1 is a widget frame
+```
+
+## Resizable Windows
+
+The main app will recursively resize all subframes. This can be
+turned off with the `cleanResize` param in `run()`. Only frames
+makes this resize only apply to frames that only have subframes, not
+widgets. This generally looks better, but can be disabled by setting
+`onlyFrames` to False.
+
+Resizing can also be manually added to a frame by calling
+`makeResizable()`.
+
 ## New Widgets:
 
 ### SlideSwitch

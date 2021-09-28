@@ -63,19 +63,20 @@ class App(TKMT.ThemedTKinterFrame):
         self.input_frame.Combobox(["You", "can", "edit", "these", "options."], self.comboboxvar)
         self.input_frame.OptionMenu(self.option_menu_list, self.optionmenuvar, lambda x: print("Menu:",x))
 
-        self.displayframe = self.addLabelFrame("Display Frame", col=2, rowspan=3)
+        self.panedWindow = self.PanedWindow("Paned Window Test", col=2, rowspan=3)
+        self.pane1 = self.panedWindow.addWindow()
 
         # Define treeview data
         with open('treeviewdata.json') as f:
             tree = json.load(f)
-        self.displayframe.Treeview(['Files', 'Purpose'], [120,120], 10, tree, 'subfiles', ['name', 'purpose'])
+        self.pane1.Treeview(['Files', 'Purpose'], [120,120], 10, tree, 'subfiles', ['name', 'purpose'])
 
-        #TODO - paned window
-
-        self.notebook = self.displayframe.Notebook("Test Notebook")
+        self.pane2 = self.panedWindow.addWindow()
+        self.notebook = self.pane2.Notebook("Test Notebook")
         self.tab_1 = self.notebook.addTab("Tab 1")
         self.tab_1.Scale(100, 0, self.slidervar)
-        self.tab_1.Progressbar(self.slidervar, mode="indeterminate")
+        self.tab_1.Progressbar(self.slidervar, mode="determinate")
+        self.tab_1.makeResizable(onlyFrames=False)
 
         self.tab_2 = self.notebook.addTab("Tab 2")
         self.tab_2.Label("Label text here.")
@@ -83,7 +84,8 @@ class App(TKMT.ThemedTKinterFrame):
         self.tab_3 = self.notebook.addTab("Tab 3")
         self.tab_3.Text("Normal text here.")
 
-        self.displayframe.Label(self.theme.capitalize() + " theme: " + self.mode)
+        self.pane3 = self.panedWindow.addWindow()
+        self.pane3.Label(self.theme.capitalize() + " theme: " + self.mode)
 
         self.debugPrint()
         self.run()

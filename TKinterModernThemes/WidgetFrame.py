@@ -7,7 +7,6 @@ import math
 import tkinter as tk
 
 #TODO - matplotlib integration
-#TODO - rest of widgets
 
 #region validation funcs
 def isFloat(x):
@@ -157,7 +156,7 @@ def tabulate(widgets):
 
 class Notebook:
     def __init__(self, master, name, **widgetkwargs):
-        """Creates a widget frame based notebook. Call make resizable to make notebook resizable."""
+        """Creates a widget frame based notebook."""
         self.notebook = ttk.Notebook(master, **widgetkwargs)
         self.tabs = []
         self.frames = []
@@ -178,12 +177,39 @@ class Notebook:
         return widgetFrame
 
     def makeResizable(self, recursive=True, onlyFrames=True):
-        for tab in self.tabs:
-            for index in range(tab.grid_size()[0]):
-                tab.columnconfigure(index=index, weight=1)
-            for index in range(tab.grid_size()[1]):
-                tab.rowconfigure(index=index, weight=1)
+        """See make resizable in WidgetFrame"""
+        if recursive:
+            for frame in self.frames:
+                frame.makeResizable(onlyFrames=onlyFrames)
 
+    def debugPrint(self, recursive=True):
+        for frame in self.frames:
+            frame.debugPrint(recursive)
+
+class PanedWindow:
+    def __init__(self, master, name, orient = 'vertical', **widgetkwargs):
+        """Creates a widget frame based panedwindow."""
+        self.panedwindow = ttk.PanedWindow(master, orient=orient, **widgetkwargs)
+        self.windows = []
+        self.frames = []
+        self.name = name
+
+    def addWindow(self, weight=1):
+        """
+        Adds a tab to the notebook.
+
+        :param weight: Weight for window, windows with higher weight get more space allocated
+        """
+
+        window = ttk.Frame(self.panedwindow)
+        self.windows.append(window)
+        widgetFrame = WidgetFrame(window, self.name + " Window: " + str(len(self.windows)))
+        self.frames.append(widgetFrame)
+        self.panedwindow.add(window, weight=weight)
+        return widgetFrame
+
+    def makeResizable(self, recursive=True, onlyFrames=True):
+        """See make resizable in WidgetFrame"""
         if recursive:
             for frame in self.frames:
                 frame.makeResizable(onlyFrames=onlyFrames)
@@ -214,9 +240,16 @@ class WidgetFrame:
         self.activecol = value
 
     def makeResizable(self, recursive=True, onlyFrames=True):
+        """
+        Makes all subframes resize nicely
+
+        :param recursive: Resize applies to subframes of subframes
+        :param onlyFrames: Only resize frame rows (makes widgets look better)
+        """
         allFrames = True
         for widget in self.widgets:
-            if type(widget.widget) not in [Notebook, WidgetFrame, ttk.Separator]:
+            if type(widget.widget) not in [Notebook, WidgetFrame, PanedWindow, ttk.Separator,
+                                           ttk.Label, ttk.Treeview]:
                 allFrames = False
 
         if allFrames or not onlyFrames:
@@ -228,7 +261,7 @@ class WidgetFrame:
 
         if recursive:
             for widget in self.widgets:
-                if type(widget.widget) in [Notebook, WidgetFrame]:
+                if type(widget.widget) in [Notebook, PanedWindow, WidgetFrame]:
                     widget.widget.makeResizable(onlyFrames=onlyFrames)
 
     def getRow(self, row, col, rowspan, colspan) -> Tuple[int, int]:
@@ -744,6 +777,34 @@ class WidgetFrame:
 
         return widget
 
+    def PanedWindow(self, name, orient = 'vertical', row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
+                    rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
+
+        """
+        Creates a ttk.PanedWindow with widgetframe compatability
+
+        :param name: Name for debugging
+        :param orient: "vertical" or "horizontal"
+        :param row: Passed to grid, defaults to +1 of last item in col
+        :param col: Passed to grid, defaults to 0
+        :param padx: Passed to grid
+        :param pady: Passed to grid
+        :param sticky: Passed to grid
+        :param rowspan: Passed to grid
+        :param colspan: Passed to grid
+        :param widgetkwargs: Passed to widget creation
+        :param gridkwargs: Passed to grid placement
+        """
+
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+        row, col = self.getRow(row, col, rowspan, colspan)
+        widget = PanedWindow(self.master, name, orient, **widgetkwargs)
+        widget.panedwindow.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan = rowspan,
+                                columnspan = colspan, **gridkwargs)
+        self.widgets.append(Widget(widget, "Paned Window", row, col, rowspan, colspan, name))
+
+        return widget
+
     def Blank(self, name = "Blank", row: int = None, col: int = None, rowspan=1, colspan=1):
         """
         Adds a blank space to prevent widget placement
@@ -875,7 +936,7 @@ class WidgetFrame:
     def debugPrint(self, recursive=True):
         subframes = []
         for widget in self.widgets:
-            if type(widget.widget) in [WidgetFrame, Notebook]:
+            if type(widget.widget) in [WidgetFrame, Notebook, PanedWindow]:
                 subframes.append(widget)
 
         print("Widget Frame: " + self.text)

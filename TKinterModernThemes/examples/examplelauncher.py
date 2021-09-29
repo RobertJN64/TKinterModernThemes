@@ -7,10 +7,11 @@ import TKinterModernThemes.examples.togglebutton as demo3
 import TKinterModernThemes.examples.accentbutton as demo4
 import TKinterModernThemes.examples.combinationdemo as demo5
 import TKinterModernThemes.examples.layoutdemo as demo6
+import TKinterModernThemes.examples.matplotlibexample as demo7
 
-demos = [demo1, demo2, demo3, demo4, demo5, demo6]
+demos = [demo1, demo2, demo3, demo4, demo5, demo6, demo7]
 names = ["All Widgets Demo", "Slide Switch Demo", "Toggle Button Demo", "Accent Button Demo",
-         "Combination Demo", "Layout Demo"]
+         "Combination Demo", "Layout Demo", "Matplotlib Demo"]
 
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self):
@@ -44,7 +45,6 @@ class App(TKMT.ThemedTKinterFrame):
         if mode == self.modeoptions[0]:
            mode = ""
         demo.App(theme, mode, self.usecommandargs.get(), self.usethemeconfigfile.get(), topLevel=True)
-
 
     def flipSwitches(self, _):
         self.usecommandargs.set(False)

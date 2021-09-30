@@ -43,7 +43,7 @@ Azure is similar to park, with a blue as the accent color.
 
 ## Installation
 
-`pip install git+https://RobertJN64/TKinterModernThemes`
+`pip install git+https://github.com/RobertJN64/TKinterModernThemes`
 
 ## Integration
 
@@ -51,7 +51,7 @@ These themes can be added by creating a themed frame.
 A theme and mode (dark/light) can be specified.
 If you need multiple windows, all but one should be marked as topLevel.
 
-The frame for the app can be accessed by self.root, but WidgetFrames
+The frame for the app can be accessed by `self.root`, but WidgetFrames
 provide a cleaner alternative.
 
 ## Widget Frames
@@ -78,7 +78,7 @@ App()
 ```
 
 The widgets have params for the common use cases. If more params are needed, they can be
-passed as dicts to **widgetkwargs and **gridkwargs respectively.
+passed as dicts to `**widgetkwargs` and `**gridkwargs` respectively.
 
 WidgetFrames can be combined with normal tkinter use. Note: debugPrint() will only
 display widgets created from the WidgetFrame. Custom created
@@ -243,3 +243,42 @@ if __name__ == "__main__":
 
 See [allwidgets.py](TKinterModernThemes/examples/allwidgets.py) for info on each widget.
 See [examples](TKinterModernThemes/examples) for more examples on using TKMT frames.
+
+## Matplotlib integration
+
+TKMT can work with matplotlib. See `WidgetFrame.matplotlibFrame` for more info.
+
+### Example:
+```python
+import TKinterModernThemes as TKMT
+import random
+
+class App(TKMT.ThemedTKinterFrame):
+    def __init__(self): 
+        super().__init__(str("Matplotlib Example"))
+
+        self.graphframe = self.addLabelFrame(str("2D Graph"))
+        self.graphframe2 = self.addLabelFrame(str("3D Graph"), col=1)
+        self.canvas, fig, self.ax, background, self.accent = self.graphframe.matplotlibFrame("Graph Frame Test")
+        self.canvas2, fig2, self.ax2, _, _ = self.graphframe2.matplotlibFrame("Graph 3D", projection='3d')
+        buttonframe = self.addLabelFrame(str("Control Buttons"), colspan=2)
+        buttonframe.Button("Add Data", self.addData)
+        self.run()
+
+    def addData(self):
+        x = []
+        y = []
+        z = []
+
+        for i in range(0, 100):
+            for l in [x, y, z]:
+                l.append(random.random() * 100)
+
+        self.ax.scatter(x, y, c=self.accent)
+        self.ax2.scatter(x, y, z, c=self.accent)
+        self.canvas.draw()
+        self.canvas2.draw()
+
+if __name__ == "__main__":
+    App()
+```

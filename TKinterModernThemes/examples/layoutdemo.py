@@ -2,7 +2,7 @@ import TKinterModernThemes as TKMT
 
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
-        super().__init__("Accent button", theme, mode,
+        super().__init__("Layout Demo", theme, mode,
                          usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
         #None is because these aren't hooked up to commands
         self.leftframe = self.addLabelFrame("Left frame")

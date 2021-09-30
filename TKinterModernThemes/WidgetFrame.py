@@ -6,8 +6,6 @@ from typing import List, Union, Tuple
 import math
 import tkinter as tk
 
-#TODO - matplotlib integration
-
 #region validation funcs
 def isFloat(x):
     try:
@@ -316,7 +314,8 @@ class WidgetFrame:
         widget = ttk.Frame(self.master, **gridkwargs)
         frame = WidgetFrame(widget, name)
         row, col = self.getRow(row, col, rowspan, colspan)
-        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, **gridkwargs)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan,
+                    columnspan = colspan, **gridkwargs)
         self.widgets.append(Widget(frame, "Widget Frame", row, col, rowspan, colspan, name))
         return frame
 
@@ -340,7 +339,8 @@ class WidgetFrame:
         widget = ttk.LabelFrame(self.master, text=text, **gridkwargs)
         frame = WidgetFrame(widget, text)
         row, col = self.getRow(row, col, rowspan, colspan)
-        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, **gridkwargs)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, columnspan=colspan,
+                    **gridkwargs)
         self.widgets.append(Widget(frame, "Widget Frame", row, col, rowspan, colspan, text))
         return frame
 
@@ -931,6 +931,77 @@ class WidgetFrame:
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
         self.widgets.append(Widget(widget, "Progressbar" + str((lower, upper)), row, col, rowspan, colspan))
         return widget
+
+    def matplotlibFrame(self, name, projection = None, toolbar = True, figsize=(4,4), figpadx: int = None,
+                        figpady: int = None, row: int = None, col: int = None, padx=10, pady=10, sticky="ew",
+                        rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
+        """
+        Creates a frame and drops in a matplotlib figure and axes.
+        Returns canvas, fig, axes, backgroundcolor, accentcolor.
+
+
+        :param name: Name for debugging
+        :param projection: Figure projection, use '3d' for 3D
+        :param toolbar: Shows a matplotlib toolbar
+        :param figpadx: Extra padding around graph to stop rendering issues, default to 5 in 2d, 30 in 3d
+        :param figpady: Extra padding around graph to stop rendering issues, default to 5 in 2d, (5,20) in 3d
+        :param figsize: Sets figure creation size. Fig will not resize to below this point
+        :param row: passed to grid
+        :param col: passed to grid
+        :param padx: passed to grid
+        :param pady: passed to grid
+        :param sticky: passed to grid
+        :param rowspan: passed to grid
+        :param colspan: passed to grid
+        :param widgetkwargs: passed to widget
+        :param gridkwargs: passed to grid
+        """
+        try:
+            import matplotlib.pyplot as plt
+            from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+        except ImportError:
+            warn("Matplotlib is required to use this feature.")
+            return None, None, None, None
+
+        if figpadx is None:
+            if projection == '3d':
+                figpadx = 30
+            else:
+                figpadx = 5
+
+        if figpady is None:
+            if projection == '3d':
+                figpady = (5,20)
+            else:
+                figpady = 5
+
+        if "dark" in self.master.tk.call("ttk::style", "theme", "use"):
+            plt.style.use('dark_background')
+        else:
+            plt.style.use('default')
+        backgroundcolor = self.master.option_get('background', ".")
+        accentcolor = self.master.option_get("selectBackground", ".")
+        fig = plt.figure(figsize=figsize, facecolor=backgroundcolor)
+        ax = fig.add_subplot(111, projection=projection, facecolor=backgroundcolor)
+        widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
+
+        graphframe = self.addFrame(name, row, col, padx, pady, sticky, rowspan, colspan,
+                                            widgetkwargs=widgetkwargs, gridkwargs=gridkwargs)
+
+
+        canvas = FigureCanvasTkAgg(fig, master=graphframe.master)  # A tk.DrawingArea.
+        canvas.draw()
+        row, col = self.getRow(row, col, 1, 1)
+        canvas.get_tk_widget().grid(row=row, column=col, sticky='nsew', padx=figpadx, pady=figpady)
+        if toolbar:
+            toolbar = NavigationToolbar2Tk(canvas, self.master, pack_toolbar=False)
+            toolbar.update()
+            row, col = self.getRow(row, col, 1, 1)
+            toolbar.grid(row=row, column=col, padx=5, sticky="sw")
+            self.widgets.append(Widget(toolbar, "Graph Toolbar", row, col, 1, 1))
+
+        return canvas, fig, ax, backgroundcolor, accentcolor
+
 
     # endregion
     def debugPrint(self, recursive=True):

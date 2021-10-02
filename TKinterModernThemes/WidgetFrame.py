@@ -222,7 +222,7 @@ class WidgetFrame:
     def __init__(self, master, name):
         """
         Creates a widget frame (a frame with some bonus features)
-        References to the frame should be by self.master
+        References to the frame should be by self.master.
 
         :param master: Should be a frame
         :param name: Name of widget, used in labeling
@@ -234,6 +234,7 @@ class WidgetFrame:
         self.skiprows: List[List[int]] = [] #used for preventing colspan overlap
         self.widgets = WidgetList()
         self.activecol = 0
+        self.resizableWidgets = None
         
     def setActiveCol(self, value):
         """Set col for newly placed widgets to drop into"""
@@ -241,15 +242,19 @@ class WidgetFrame:
 
     def makeResizable(self, recursive=True, onlyFrames=True):
         """
-        Makes all subframes resize nicely
+        Makes all subframes resize nicely. Configure resizable widgets in self.resizableWidgets
 
         :param recursive: Resize applies to subframes of subframes
         :param onlyFrames: Only resize frame rows (makes widgets look better)
         """
         allFrames = True
         for widget in self.widgets:
-            if type(widget.widget) not in [Notebook, WidgetFrame, PanedWindow, ttk.Separator,
-                                           ttk.Label, ttk.Treeview, toolbartype]:
+            if self.resizableWidgets is None:
+                resizableWidgets = [Notebook, WidgetFrame, PanedWindow, ttk.Separator, ttk.Label,
+                                           ttk.Treeview, toolbartype]
+            else:
+                resizableWidgets = self.resizableWidgets
+            if type(widget.widget) not in resizableWidgets:
                 allFrames = False
 
         if allFrames or not onlyFrames:

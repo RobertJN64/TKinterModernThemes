@@ -6,6 +6,8 @@ from typing import List, Union, Tuple
 import math
 import tkinter as tk
 
+toolbartype = None
+
 #region validation funcs
 def isFloat(x):
     try:
@@ -247,7 +249,7 @@ class WidgetFrame:
         allFrames = True
         for widget in self.widgets:
             if type(widget.widget) not in [Notebook, WidgetFrame, PanedWindow, ttk.Separator,
-                                           ttk.Label, ttk.Treeview]:
+                                           ttk.Label, ttk.Treeview, toolbartype]:
                 allFrames = False
 
         if allFrames or not onlyFrames:
@@ -998,6 +1000,8 @@ class WidgetFrame:
             toolbar.update()
             row, col = self.getRow(row, col, 1, 1)
             toolbar.grid(row=row, column=col, padx=5, sticky="sw")
+            global toolbartype
+            toolbartype = type(toolbar)
             self.widgets.append(Widget(toolbar, "Graph Toolbar", row, col, 1, 1))
 
         return canvas, fig, ax, backgroundcolor, accentcolor

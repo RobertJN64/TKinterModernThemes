@@ -228,7 +228,7 @@ class WidgetFrame:
         :param name: Name of widget, used in labeling
         """
 
-        self.text = name
+        self.name = name
         self.master = master
         self.rowcounters: List[int] = []
         self.skiprows: List[List[int]] = [] #used for preventing colspan overlap
@@ -834,14 +834,13 @@ class WidgetFrame:
         row, col = self.getRow(row, col, rowspan, colspan)
         self.widgets.append(Widget(None, name, row, col, rowspan, colspan))
 
-    def Label(self, text: str, justify='center', size=15, weight='bold', fontargs=(), row: int = None, col: int = None,
+    def Label(self, text: str, size=15, weight='bold', fontargs=(), row: int = None, col: int = None,
               padx=10, pady=10, sticky=None, rowspan: int = 1, colspan: int = 1,
               widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.label with a large font and bold text
 
         :param text: text to be displayed
-        :param justify: text posistion
         :param size: font size
         :param weight: font weight
         :param fontargs: additional font args
@@ -849,7 +848,7 @@ class WidgetFrame:
         :param col: Passed to widget, defaults to 0
         :param padx: Passed to grid
         :param pady: Passed to grid
-        :param sticky: Passed to grid - default None for justification to work
+        :param sticky: Passed to grid - use to align text
         :param rowspan: Passed to grid
         :param colspan: Passed to grid
         :param widgetkwargs: Passed to widget creation
@@ -859,26 +858,25 @@ class WidgetFrame:
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         row, col = self.getRow(row, col, rowspan, colspan)
         font = ('-size', size, '-weight', weight) + fontargs
-        widget = ttk.Label(self.master, text=text, justify=justify, font=font, **widgetkwargs)
+        widget = ttk.Label(self.master, text=text, font=font, **widgetkwargs)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, columnspan=colspan, **gridkwargs)
         self.widgets.append(Widget(widget, "Label: ", row, col, rowspan, colspan, text))
 
         return widget
 
-    def Text(self, text: str, justify='center', fontargs=(), row: int = None, col: int = None,
-             padx=10, pady=10, sticky=None, rowspan: int = 1, colspan: int = 1,
+    def Text(self, text: str, fontargs=(), row: int = None, col: int = None,
+             padx=10, pady=10, sticky="nsw", rowspan: int = 1, colspan: int = 1,
              widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.label with normal text
 
         :param text: text to be displayed
-        :param justify: text posistion
         :param fontargs: additional font args
         :param row: Passed to widget, defaults to +1 of last item in col
         :param col: Passed to widget, defaults to 0
         :param padx: Passed to grid
         :param pady: Passed to grid
-        :param sticky: Passed to grid - default None for justification to work
+        :param sticky: Passed to grid - use to align text
         :param rowspan: Passed to grid
         :param colspan: Passed to grid
         :param widgetkwargs: Passed to widget creation
@@ -887,8 +885,9 @@ class WidgetFrame:
 
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         row, col = self.getRow(row, col, rowspan, colspan)
-        widget = ttk.Label(self.master, text=text, justify=justify, font=fontargs, **widgetkwargs)
-        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, columnspan=colspan, **gridkwargs)
+        widget = ttk.Label(self.master, text=text, font=fontargs, **widgetkwargs)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, columnspan=colspan,
+                    **gridkwargs)
         self.widgets.append(Widget(widget, "Text: ", row, col, rowspan, colspan, text))
 
         return widget
@@ -1032,7 +1031,7 @@ class WidgetFrame:
             if type(widget.widget) in [WidgetFrame, Notebook, PanedWindow]:
                 subframes.append(widget)
 
-        print("Widget Frame: " + self.text)
+        print("Widget Frame: " + self.name)
         tabulate(self.widgets)
         if recursive:
             for frame in subframes:

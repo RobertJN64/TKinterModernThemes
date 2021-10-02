@@ -4,9 +4,9 @@ import tkinter as tk
 import json
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
         super().__init__("TKinter Custom Themes Demo", theme, mode,
-                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
+                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
 
         self.checkbox1 = tk.BooleanVar()
         self.checkbox2 = tk.BooleanVar(value=True)

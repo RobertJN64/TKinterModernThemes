@@ -6,8 +6,8 @@ def buttonCMD():
         print("Button clicked!")
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
-        super().__init__("Combination Demo", theme, mode, usecommandlineargs, usethemeconfigfile, topLevel)
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+        super().__init__("Combination Demo", theme, mode, usecommandlineargs, usethemeconfigfile)
         self.Button("Auto placed button!", buttonCMD) #placed at row 0, col 0
 
         self.button_frame = self.addLabelFrame(str("Frame Label")) #placed at row 1, col 0

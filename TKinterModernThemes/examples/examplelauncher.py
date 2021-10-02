@@ -44,7 +44,7 @@ class App(TKMT.ThemedTKinterFrame):
         mode = self.modeoptionvar.get()
         if mode == self.modeoptions[0]:
            mode = ""
-        demo.App(theme, mode, self.usecommandargs.get(), self.usethemeconfigfile.get(), topLevel=True)
+        demo.App(theme, mode, self.usecommandargs.get(), self.usethemeconfigfile.get())
 
     def matplotdemo(self):
         import TKinterModernThemes.examples.matplotlibexample as demo

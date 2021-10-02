@@ -4,9 +4,10 @@ import tkinter as tk
 import json
 import sys
 
+firstWindow = True
+
 class ThemedTKinterFrame(WidgetFrame):
-    def __init__(self, title: str, theme: str='', mode: str='', usecommandlineargs=True, useconfigfile=True,
-                 topLevel=False):
+    def __init__(self, title: str, theme: str='', mode: str='', usecommandlineargs=True, useconfigfile=True):
         """
         Loads tkinter and creates a themed frame.
 
@@ -17,16 +18,16 @@ class ThemedTKinterFrame(WidgetFrame):
             launch to grab a theme.
         :param useconfigfile: If this is True (default), the frame checks for a file named themeconfig.json and seaches
             for theme and mode. Config files override command line args.
-        :param topLevel: If this is True (default = False), this window will be a topLevel window
-            and inherit its theme and root from the main window. This is necessary if you
-            have multiple windows.
         """
 
         #Create tk root
-        if topLevel:
-            self.root = tk.Toplevel()
-        else:
+        global firstWindow #singleton
+        if firstWindow:
             self.root = tk.Tk()
+            firstWindow = False
+        else:
+            self.root = tk.Toplevel()
+        self.root.protocol("WM_DELETE_WINDOW", self.handleExit)
 
         self.root.title(title)
 
@@ -84,3 +85,9 @@ class ThemedTKinterFrame(WidgetFrame):
         y_cordinate = int((self.root.winfo_screenheight() / 2) - (self.root.winfo_height() / 2))
         self.root.geometry("+{}+{}".format(x_cordinate, y_cordinate - 20))
         self.root.mainloop()
+
+    def handleExit(self):
+        global firstWindow
+        self.root.destroy()
+        self.root.quit()
+        firstWindow = True

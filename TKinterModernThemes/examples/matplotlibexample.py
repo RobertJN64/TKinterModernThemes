@@ -5,10 +5,10 @@ import random
 valid = True
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
         if valid:
             super().__init__("Matplotlib Example", theme, mode,
-                             usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
+                             usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
 
             self.graphframe = self.addLabelFrame("2D Graph")
             self.graphframe2 = self.addLabelFrame("3D Graph", col=1)

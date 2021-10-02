@@ -90,33 +90,36 @@ import TKinterModernThemes as TKMT
 from TKinterModernThemes.WidgetFrame import Widget
 from tkinter import ttk
 
+
 def buttonCMD():
         print("Button clicked!")
 
+
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
-        super().__init__(str("TITLE"), theme, mode, usecommandlineargs, usethemeconfigfile, topLevel)
-        self.Button(str("Auto placed button!"), buttonCMD) #placed at row 0, col 0
+        def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+                super().__init__(str("TITLE"), theme, mode, usecommandlineargs, usethemeconfigfile)
+                self.Button(str("Auto placed button!"), buttonCMD)  # placed at row 0, col 0
 
-        self.button_frame = self.addLabelFrame(str("Frame Label")) #placed at row 1, col 0
+                self.button_frame = self.addLabelFrame(str("Frame Label"))  # placed at row 1, col 0
 
-        self.button_frame.Button(str("Button Text"), buttonCMD) #the button is dropped straight into the frame
+                self.button_frame.Button(str("Button Text"), buttonCMD)  # the button is dropped straight into the frame
 
-        button = ttk.Button(self.button_frame.master, text="Button in frame!")
-        button.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+                button = ttk.Button(self.button_frame.master, text="Button in frame!")
+                button.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
 
-        button = ttk.Button(self.master, text="Button outside frame!")
-        button.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
-        
-        button = ttk.Button(self.master, text="debugPrint() finds this button")
-        button.grid(row=3, column=0, padx=10, pady=10, sticky='nsew')
-        self.widgets.widgetlist.append(Widget(button, str("Button"), 3, 0, 1, 1,
-                                              "debugPrint() finds this button"))
-        self.debugPrint()
-        self.run()
+                button = ttk.Button(self.master, text="Button outside frame!")
+                button.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+
+                button = ttk.Button(self.master, text="debugPrint() finds this button")
+                button.grid(row=3, column=0, padx=10, pady=10, sticky='nsew')
+                self.widgets.widgetlist.append(Widget(button, str("Button"), 3, 0, 1, 1,
+                                                      "debugPrint() finds this button"))
+                self.debugPrint()
+                self.run()
+
 
 if __name__ == "__main__":
-    App(str("park"), str("dark"))
+        App(str("park"), str("dark"))
 ```
 
 WidgetFrames adds new items to each column below the last placed item in that column.
@@ -179,66 +182,77 @@ Resizing can also be manually added to a frame by calling
 ### SlideSwitch
 
 A variant of a checkbox that looks like a switch.
+
 ```python
 import TKinterModernThemes as TKMT
 import tkinter as tk
 
+
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
-        super().__init__(str("Switch"), theme, mode, usecommandlineargs=usecommandlineargs,
-                         useconfigfile=usethemeconfigfile, topLevel=topLevel)
-        self.switchframe = self.addLabelFrame(str("Switch Frame"))
-        self.switchvar = tk.BooleanVar()
-        self.switchframe.SlideSwitch("Switch", self.switchvar)
-        self.run()
+        def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+                super().__init__(str("Switch"), theme, mode, usecommandlineargs=usecommandlineargs,
+                                 useconfigfile=usethemeconfigfile)
+                self.switchframe = self.addLabelFrame(str("Switch Frame"))
+                self.switchvar = tk.BooleanVar()
+                self.switchframe.SlideSwitch("Switch", self.switchvar)
+                self.run()
+
 
 if __name__ == "__main__":
-    App(str("park"), str("dark"))
+        App(str("park"), str("dark"))
 ```
 
 
 ### ToggleButton
 
 A variant of a checkbox that looks like a button.
+
 ```python
 import TKinterModernThemes as TKMT
 import tkinter as tk
 
+
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
-        super().__init__(str("Toggle button"), theme, mode,
-                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
-        self.togglebuttonframe = self.addLabelFrame(str("Toggle Button Frame"))
-        self.togglebuttonvar = tk.BooleanVar()
-        # Togglebutton
-        self.togglebutton = self.togglebuttonframe.ToggleButton(text="Toggle button", variable=self.togglebuttonvar)
-        self.run()
+        def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+                super().__init__(str("Toggle button"), theme, mode,
+                                 usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
+                self.togglebuttonframe = self.addLabelFrame(str("Toggle Button Frame"))
+                self.togglebuttonvar = tk.BooleanVar()
+                # Togglebutton
+                self.togglebutton = self.togglebuttonframe.ToggleButton(text="Toggle button",
+                                                                        variable=self.togglebuttonvar)
+                self.run()
+
 
 if __name__ == "__main__":
-    App(str("park"), str("dark"))
+        App(str("park"), str("dark"))
 ```
 
 
 ### AccentButton
 
 A button that has a default color of a clicked button.
+
 ```python
 import TKinterModernThemes as TKMT
 
+
 def handleButtonClick():
-    print("Button clicked!")
+        print("Button clicked!")
+
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
-        super().__init__(str("Accent button"), theme, mode,
-                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
+        def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+                super().__init__(str("Accent button"), theme, mode,
+                                 usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
 
-        self.frame = self.addLabelFrame(str("Accent Button Frame"))
-        self.frame.AccentButton("Accent Button", handleButtonClick)
-        self.run()
+                self.frame = self.addLabelFrame(str("Accent Button Frame"))
+                self.frame.AccentButton("Accent Button", handleButtonClick)
+                self.run()
+
 
 if __name__ == "__main__":
-    App(str("park"), str("dark"))
+        App(str("park"), str("dark"))
 ```
 
 See [allwidgets.py](TKinterModernThemes/examples/allwidgets.py) for info on each widget.

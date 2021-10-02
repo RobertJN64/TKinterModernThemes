@@ -1,9 +1,9 @@
 import TKinterModernThemes as TKMT
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
         super().__init__("Layout Demo", theme, mode,
-                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
+                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
         #None is because these aren't hooked up to commands
         self.leftframe = self.addLabelFrame("Left frame")
         self.leftframe.Button("TL Corner", None) #by default, widgets go to the top left

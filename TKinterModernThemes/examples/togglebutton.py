@@ -2,9 +2,9 @@ import TKinterModernThemes as TKMT
 import tkinter as tk
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, topLevel=False):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
         super().__init__("Toggle button", theme, mode,
-                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile, topLevel=topLevel)
+                         usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
         self.togglebuttonframe = self.addLabelFrame("Toggle Button Frame")
         self.togglebuttonvar = tk.BooleanVar()
         # Togglebutton

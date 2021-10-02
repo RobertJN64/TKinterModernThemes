@@ -43,7 +43,7 @@ class App(TKMT.ThemedTKinterFrame):
         self.button_frame = self.addLabelFrame("Buttons")
         self.button_frame.Button("Button", self.handleButtonClick)
         self.button_frame.AccentButton("Accent Button", self.handleButtonClick)
-        self.button_frame.ToggleButton("Toggle Button", variable=self.togglebuttonvar)
+        self.button_frame.ToggleButton("Toggle Button", self.togglebuttonvar)
 
         # Menu for the Menubutton
         menu = tk.Menu(self.master)
@@ -75,7 +75,7 @@ class App(TKMT.ThemedTKinterFrame):
         self.notebook = self.pane2.Notebook("Test Notebook")
         self.tab_1 = self.notebook.addTab("Tab 1")
         self.tab_1.Scale(100, 0, self.slidervar)
-        self.tab_1.Progressbar(self.slidervar, mode="determinate")
+        self.tab_1.Progressbar(self.slidervar)
         self.tab_1.makeResizable(onlyFrames=False)
 
         self.tab_2 = self.notebook.addTab("Tab 2")

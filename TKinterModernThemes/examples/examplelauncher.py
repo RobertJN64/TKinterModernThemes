@@ -27,12 +27,12 @@ class App(TKMT.ThemedTKinterFrame):
 
         self.buttonframe = self.addLabelFrame("Examples")
         for i in range(0, len(demos)):
-            self.buttonframe.Button(text=names[i], command=self.runDemo, args=(demos[i],))
-        self.buttonframe.Button("Matplotlib Demo", command=self.matplotdemo)
+            self.buttonframe.Button(names[i], self.runDemo, (demos[i],))
+        self.buttonframe.Button("Matplotlib Demo", self.matplotdemo)
 
         self.menuframe = self.addLabelFrame("Config", col=1)
-        self.menuframe.OptionMenu(self.themeoptions, self.themeoptionvar, command=self.flipSwitches)
-        self.menuframe.OptionMenu(self.modeoptions, self.modeoptionvar, command=self.flipSwitches)
+        self.menuframe.OptionMenu(self.themeoptions, self.themeoptionvar, self.flipSwitches)
+        self.menuframe.OptionMenu(self.modeoptions, self.modeoptionvar, self.flipSwitches)
         self.menuframe.SlideSwitch("Use Command Parameters", self.usecommandargs)
         self.menuframe.SlideSwitch("Use Theme Config File", self.usethemeconfigfile)
         self.run()

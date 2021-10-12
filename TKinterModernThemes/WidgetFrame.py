@@ -240,6 +240,10 @@ class WidgetFrame:
         """Set col for newly placed widgets to drop into"""
         self.activecol = value
 
+    def nextCol(self):
+        """Increments col by one"""
+        self.activecol += 1
+
     def makeResizable(self, recursive=True, onlyFrames=True):
         """
         Makes all subframes resize nicely. Configure resizable widgets in self.resizableWidgets

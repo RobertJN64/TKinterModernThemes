@@ -39,7 +39,7 @@ class App(TKMT.ThemedTKinterFrame):
         self.radio_frame.Radiobutton("Disabled", self.radiobuttonvar, value="button3", disabled=True)
         self.radiobuttonvar.trace_add('write', self.printradiobuttons)
 
-        self.setActiveCol(1)
+        self.nextCol()
         self.button_frame = self.addLabelFrame("Buttons")
         self.button_frame.Button("Button", self.handleButtonClick)
         self.button_frame.AccentButton("Accent Button", self.handleButtonClick)
@@ -63,7 +63,8 @@ class App(TKMT.ThemedTKinterFrame):
         self.input_frame.Combobox(["You", "can", "edit", "these", "options."], self.comboboxvar)
         self.input_frame.OptionMenu(self.option_menu_list, self.optionmenuvar, lambda x: print("Menu:",x))
 
-        self.panedWindow = self.PanedWindow("Paned Window Test", col=2, rowspan=3)
+        self.nextCol()
+        self.panedWindow = self.PanedWindow("Paned Window Test", rowspan=3)
         self.pane1 = self.panedWindow.addWindow()
 
         # Define treeview data

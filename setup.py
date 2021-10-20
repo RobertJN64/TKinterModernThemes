@@ -14,7 +14,7 @@ setup(
         'matplotlib': ['matplotlib']
     },
     # *strongly* suggested for sharing
-    version='1.5.6',
+    version='1.6.0',
     # The license can be anything you like
     license='MIT',
     description='A collection of modern themes with code that makes it easy to integrate into a tkinter project..',

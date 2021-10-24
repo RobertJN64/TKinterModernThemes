@@ -10,6 +10,14 @@ The themes in this library were developed by rdbende and licensed under the MIT 
 https://github.com/rdbende
 This library makes these themes consistent and easier to implement into an existing project.
 
+This library also has code to implement WidgetFrames, an
+expansion on TKinter's label frames that make creating complex
+layouts much quicker and more readable.
+
+## Installation
+
+`pip install TKinterModernThemes`
+
 ## Why use themes?
 Tkinter looks really ugly be default.
 
@@ -40,10 +48,6 @@ Azure is similar to park, with a blue as the accent color.
 
 ![](TKinterModernThemes/images/azuredark.jpg)
 ![](TKinterModernThemes/images/azurelight.jpg)
-
-## Installation
-
-`pip install git+https://github.com/RobertJN64/TKinterModernThemes`
 
 ## Integration
 

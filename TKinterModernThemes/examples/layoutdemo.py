@@ -1,7 +1,7 @@
 import TKinterModernThemes as TKMT
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, autorun=True):
         super().__init__("Layout Demo", theme, mode,
                          usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
         #None is because these aren't hooked up to commands
@@ -39,7 +39,9 @@ class App(TKMT.ThemedTKinterFrame):
         self.rightframe.Button("D", None, col=1)
 
         self.debugPrint()
-        self.run()
+
+        if autorun:
+            self.run()
 
 
 if __name__ == "__main__":

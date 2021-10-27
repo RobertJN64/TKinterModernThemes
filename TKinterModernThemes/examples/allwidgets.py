@@ -4,7 +4,7 @@ import tkinter as tk
 import json
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, autorun=True):
         super().__init__("TKinter Custom Themes Demo", theme, mode,
                          usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
 
@@ -89,7 +89,8 @@ class App(TKMT.ThemedTKinterFrame):
         self.pane3.Label(self.theme.capitalize() + " theme: " + self.mode)
 
         self.debugPrint()
-        self.run()
+        if autorun:
+            self.run()
 
     def printcheckboxvars(self, number):
         print("Checkbox number:", number, "was pressed")

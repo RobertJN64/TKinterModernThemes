@@ -5,7 +5,7 @@ import random
 valid = True
 
 class App(TKMT.ThemedTKinterFrame):
-    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True, autorun=True):
+    def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
         if valid:
             super().__init__("Matplotlib Example", theme, mode,
                              usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
@@ -17,9 +17,7 @@ class App(TKMT.ThemedTKinterFrame):
             buttonframe = self.addLabelFrame("Control Buttons", colspan=2)
             buttonframe.Button("Add Data", self.addData)
             self.debugPrint()
-
-            if autorun:
-                self.run()
+            self.run()
 
     def addData(self):
         x = []

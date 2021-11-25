@@ -16,19 +16,15 @@ expansion on TKinter's label frames that make creating complex
 layouts much quicker and more readable.
 
 
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-module-template.rst
-   :recursive:
 
-   TKinterModernThemes
-   TKinterModernThemes.examples
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    installation
+   API
+   themes
 
 .. |tests-badge| image:: https://github.com/RobertJN64/TKinterModernThemes/actions/workflows/tests.yml/badge.svg
     :alt: Tests Badge

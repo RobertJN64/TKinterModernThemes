@@ -1,3 +1,7 @@
+"""
+Source for ThemedTKinterFrame, an entry point into the widget frame system.
+"""
+
 from TKinterModernThemes.ThemeStyles import ThemeStyles
 from TKinterModernThemes.WidgetFrame import WidgetFrame
 import tkinter as tk

@@ -1,3 +1,7 @@
+"""
+Simple demo of accent button widget
+"""
+
 import TKinterModernThemes as TKMT
 
 def handleButtonClick():

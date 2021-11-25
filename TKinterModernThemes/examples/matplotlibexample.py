@@ -1,3 +1,7 @@
+"""
+Demo of matplotilb integration
+"""
+
 import TKinterModernThemes as TKMT
 from warnings import warn
 import random

@@ -1,3 +1,7 @@
+"""
+Demo of using tk widgets with widget frame widgets
+"""
+
 import TKinterModernThemes as TKMT
 from TKinterModernThemes.WidgetFrame import Widget
 from tkinter import ttk

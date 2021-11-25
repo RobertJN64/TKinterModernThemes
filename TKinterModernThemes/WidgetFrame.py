@@ -1,3 +1,7 @@
+"""
+Source for widget frame, including all widget creation functions
+"""
+
 from TKinterModernThemes.ThemeStyles import ThemeStyles
 from functools import partial as PARTIAL #for calling funcs with args
 from warnings import warn
@@ -9,29 +13,50 @@ import tkinter as tk
 toolbartype = None
 
 #region validation funcs
-def isFloat(x):
+def isFloat(x) -> bool:
+    """
+    Validation function used for a widget, returns true if x is float
+    """
     try:
         float(x)
         return True
     except ValueError:
         return False
 
-def isConstrainedFloat(lower, upper, x):
+def isConstrainedFloat(lower, upper, x) -> bool:
+    """
+    Validation function used for a widget, returns true if x is within range
+    :param lower: lower bound
+    :param upper: upper bound
+    :param x: value
+    """
     return isFloat(x) and lower <= float(x) <= upper
 
-def isMember(values, x):
+def isMember(values, x) -> bool:
+    """
+    Validation function used for a widget, returns true if x is in values
+    """
     return x in values
 
 def adjust(lower, inputvar, pbvar, _var, _indx, _mode):
+    """
+    Copies variable value, but subtracts value
+    """
     pbvar.set(inputvar.get() - lower)
 #endregion
 #region help funcs
 def partial(command, *args):
+    """
+    Creates a partial function, but returns None if command is None
+    """
     if command is not None:
         return PARTIAL(command, *args)
     return None
 
 def noneDict(*args):
+    """
+    Used for replacing None with {}
+    """
     l = []
     for arg in args:
         if arg is None:
@@ -44,6 +69,19 @@ def noneDict(*args):
 class Widget:
     def __init__(self, widget, name: str, row: int, col: int, rowspan: int, colspan: int, text="",
                  command=None, args=()):
+        """
+        Internal structure for storing widget information
+
+        :param widget: refrence to tk widget
+        :param name: friendly, printable name
+        :param row: from grid
+        :param col: from grid
+        :param rowspan: from grid
+        :param colspan: from grid
+        :param text: more text for printing
+        :param command: run when widget is interacted with
+        :param args: args for command
+        """
         self.widget = widget
         self.name = name
         self.row = row
@@ -65,10 +103,14 @@ class Widget:
             return self.name + '("' + self.text + '")' + self.commandstr
 
     def debugPrint(self, recursive=True):
+        """
+        Calls internal debug print for widget
+        """
         self.widget.debugPrint(recursive)
         
 class WidgetList:
     def __init__(self):
+        """Class for storing groups of widgets"""
         self.widgetlist = []
         
     def append(self, item: Widget):
@@ -84,10 +126,16 @@ class WidgetList:
 #endregion
 #region tabulate
 def centerText(text, longesttext):
+    """
+    Internal function for printing debug info, called by tabulate
+    """
     ldif = longesttext - len(text)
     return " " * math.floor(ldif / 2) + text + " " * math.ceil(ldif / 2)
 
 def printRow(grid, i, longesttext):
+    """
+    Internal function for printing debug info, called by tabulate
+    """
     s = '|'
     row = grid[i]
     for col in range(0, len(row)):
@@ -106,6 +154,9 @@ def printRow(grid, i, longesttext):
 
 
 def printSeperator(grid: List[List[Widget]], i, longesttext):
+    """
+    Internal function for printing debug info, called by tabulate
+    """
     s = "+"
     if i == 0:
         row = [None] * len(grid[0])
@@ -124,6 +175,9 @@ def printSeperator(grid: List[List[Widget]], i, longesttext):
     print(s)
 
 def tabulate(widgets):
+    """
+    Internal function for printing debug info
+    """
     maxrow = 0
     maxcol = 0
 

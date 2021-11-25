@@ -1,3 +1,7 @@
+"""
+UI for launcing examples
+"""
+
 import TKinterModernThemes as TKMT
 import tkinter as tk
 

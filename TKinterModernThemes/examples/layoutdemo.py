@@ -1,3 +1,7 @@
+"""
+Demo of layout edge cases
+"""
+
 import TKinterModernThemes as TKMT
 
 class App(TKMT.ThemedTKinterFrame):

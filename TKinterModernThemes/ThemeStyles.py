@@ -1,3 +1,7 @@
+"""
+Enums for widget styles
+"""
+
 class ThemeStyles:
     class ButtonStyles:
         AccentButton = "Accent.TButton" #colored by default button

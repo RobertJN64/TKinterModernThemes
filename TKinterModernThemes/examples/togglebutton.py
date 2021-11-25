@@ -1,3 +1,7 @@
+"""
+Simple demo of toggle button widget
+"""
+
 import TKinterModernThemes as TKMT
 import tkinter as tk
 

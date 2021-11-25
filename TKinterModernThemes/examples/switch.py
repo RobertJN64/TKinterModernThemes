@@ -1,3 +1,7 @@
+"""
+Simple demo of switch widget
+"""
+
 import TKinterModernThemes as TKMT
 import tkinter as tk
 

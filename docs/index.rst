@@ -28,7 +28,7 @@ layouts much quicker and more readable.
    :maxdepth: 2
    :caption: Contents:
 
-    installation
+   installation
 
 .. |tests-badge| image:: https://github.com/RobertJN64/TKinterModernThemes/actions/workflows/tests.yml/badge.svg
     :alt: Tests Badge

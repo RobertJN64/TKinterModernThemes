@@ -1,3 +1,3 @@
-## Installation
+# Installation
 
 `pip install TKinterModernThemes`

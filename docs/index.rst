@@ -22,10 +22,13 @@ layouts much quicker and more readable.
    :recursive:
 
    TKinterModernThemes
+   TKinterModernThemes.examples
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+    installation
 
 .. |tests-badge| image:: https://github.com/RobertJN64/TKinterModernThemes/actions/workflows/tests.yml/badge.svg
     :alt: Tests Badge

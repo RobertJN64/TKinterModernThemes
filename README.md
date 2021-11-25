@@ -3,7 +3,6 @@
 ![Tests Badge](https://github.com/RobertJN64/TKinterModernThemes/actions/workflows/tests.yml/badge.svg)
 ![Python Version Badge](https://img.shields.io/pypi/pyversions/TKinterModernThemes)
 ![License Badge](https://img.shields.io/github/license/RobertJN64/TKinterModernThemes)
-[![Documentation Status](https://readthedocs.org/projects/tkintermodernthemes/badge/?version=latest)](https://tkintermodernthemes.readthedocs.io/en/latest/?badge=latest)
 
 
 ![](TKinterModernThemes/images/parkdark.jpg)

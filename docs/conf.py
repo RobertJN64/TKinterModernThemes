@@ -17,12 +17,12 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'RobertJN64TemplatePackage'
+project = 'TKinterModernThemes'
 copyright = '2021, Robert Nies'
 author = 'Robert Nies'
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.0'
+release = '1.7.0'
 
 
 # -- General configuration ---------------------------------------------------

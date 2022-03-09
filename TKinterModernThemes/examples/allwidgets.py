@@ -74,7 +74,7 @@ class App(TKMT.ThemedTKinterFrame):
         # Define treeview data
         with open('treeviewdata.json') as f:
             tree = json.load(f)
-        self.pane1.Treeview(['Files', 'Purpose'], [120,120], 10, tree, 'subfiles', ['name', 'purpose'])
+        self.pane1.Treeview(['Files', 'Purpose'], [120,120], 10, tree, 'subfiles', ['name', 'purpose'], openkey='open')
 
         self.pane2 = self.panedWindow.addWindow()
         self.notebook = self.pane2.Notebook("Test Notebook")

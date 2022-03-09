@@ -6,7 +6,7 @@ from TKinterModernThemes.ThemeStyles import ThemeStyles
 from functools import partial as PARTIAL #for calling funcs with args
 from warnings import warn
 from tkinter import ttk
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Literal
 import math
 import tkinter as tk
 
@@ -241,7 +241,7 @@ class Notebook:
             frame.debugPrint(recursive)
 
 class PanedWindow:
-    def __init__(self, master, name, orient = 'vertical', **widgetkwargs):
+    def __init__(self, master, name, orient: Literal["vertical", 'horiztonal'] = 'vertical', **widgetkwargs):
         """Creates a widget frame based panedwindow."""
         self.panedwindow = ttk.PanedWindow(master, orient=orient, **widgetkwargs)
         self.windows = []
@@ -564,7 +564,7 @@ class WidgetFrame:
 
     def Entry(self, textvariable: tk.Variable, row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
               validatecommand=None, validatecommandargs=(), validatecommandmode='%P', invalidcommand=None,
-              invalidcommandargs=(), validate='all', rowspan: int = 1, colspan: int = 1,
+              invalidcommandargs=(), validate=None, rowspan: int = 1, colspan: int = 1,
               widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Entry widget.
@@ -580,12 +580,19 @@ class WidgetFrame:
         :param validatecommandmode: Callback substitution code, defaults to 'new value'
         :param invalidcommand: Command to be called if text is invalid
         :param invalidcommandargs: Args to be passed to invalid command
-        :param validate: When the widget should validate, default is 'all'
+        :param validate: When the widget should validate, default is 'all' if command is supplied, none otherwise
         :param rowspan: Passed to grid
         :param colspan: Passed to grid
         :param widgetkwargs: Passed to widget creation
         :param gridkwargs: Passed to grid placement
         """
+
+        if validate is None:
+            if validatecommand is not None:
+                validate = 'all'
+            else:
+                validate = 'none'
+
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         validatefunc = self.master.register(partial(validatecommand, *validatecommandargs))
         invalidfunc = self.master.register(partial(invalidcommand, *invalidcommandargs))
@@ -599,7 +606,8 @@ class WidgetFrame:
 
     def NumericalSpinbox(self, lower: float, upper: float, increment: float, variable: tk.Variable,
                          validatecommand=isConstrainedFloat, validatecommandargs=(), validatecommandmode='%P',
-                         validate='focusout', row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
+                         validate:Literal['none', 'focus', 'focusin', 'focusout', 'key', 'all']='focusout',
+                         row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
                          rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Spinbox designed for numbers.
@@ -634,7 +642,8 @@ class WidgetFrame:
         return widget
 
     def NonnumericalSpinbox(self, values: list, variable: tk.Variable, validatecommand=isMember,
-                            validatecommandargs=(), validatecommandmode='%P', validate='focusout',
+                            validatecommandargs=(), validatecommandmode='%P',
+                            validate:Literal['none', 'focus', 'focusin', 'focusout', 'key', 'all']='focusout',
                             row: int = None, col: int = None, padx=10, pady=10, sticky="nsew", wrap: bool = True,
                             rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
@@ -670,9 +679,9 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, name, row, col, rowspan, colspan))
         return widget
 
-    def Treeview(self, columnnames: list, columnwidths: list, height: int, data: dict, datasubfilename: str,
-                 datacolumnnames: list = None, anchor='w', newframe = True, row: int = None, col: int =0, padx=10,
-                 pady=10, sticky="nsew", rowspan: int = 1, colspan: int = 1,
+    def Treeview(self, columnnames: list, columnwidths: list, height: int, data: dict, subentryname: str,
+                 datacolumnnames: list = None, openkey = None, anchor='w', newframe = True, row: int = None,
+                 col: int =0, padx=10, pady=10, sticky="nsew", rowspan: int = 1, colspan: int = 1,
                  widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Treeview. Will load in data presented in a nested dict.
@@ -681,8 +690,9 @@ class WidgetFrame:
         :param columnwidths: Width of each column
         :param height: number of rows
         :param data: nested dict
-        :param datasubfilename: key in dict to go to next layer
+        :param subentryname: key in dict to go to next layer
         :param datacolumnnames: defaults to columnnames, a mapping of columnnames to the data file
+        :param openkey: bool key to set subentries open or closed
         :param anchor: text position
         :param newframe: creates a frame for the treeview and scrollbar, needed if master frame contains other widgets
         :param row: Passed to grid, defaults to +1 of last item in col
@@ -729,9 +739,12 @@ class WidgetFrame:
                 for value in datacolumnnames[1:]:
                     values.append(obj.get(value, ""))
                 widget.insert(p, index='end', iid=iid[0], text=obj[datacolumnnames[0]], values=values)
-                if obj.get(datasubfilename, []):
-                    widget.item(iid[0], open=True)  # Open parents
-                traverse(iid[0], obj.get('subfiles', []), iid)
+                if obj.get(subentryname, []):
+                    if openkey is None:
+                        widget.item(iid[0], open=True)  # Open parents
+                    else:
+                        widget.item(iid[0], open=obj[openkey])
+                traverse(iid[0], obj.get(subentryname, []), iid)
 
         traverse('', data, [0])
         self.widgets.append(Widget(widget, "Treeview", row, col, rowspan, colspan))
@@ -851,7 +864,8 @@ class WidgetFrame:
 
         return widget
 
-    def PanedWindow(self, name, orient = 'vertical', row: int = None, col: int = None, padx=10, pady=10, sticky="nsew",
+    def PanedWindow(self, name, orient: Literal["vertical", 'horiztonal'] = 'vertical', row: int = None,
+                    col: int = None, padx=10, pady=10, sticky="nsew",
                     rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
 
         """
@@ -950,9 +964,9 @@ class WidgetFrame:
 
         return widget
 
-    def Scale(self, lower: float, upper: float, variable: tk.Variable, row: int = None, col: int = None, padx=10,
-              pady=10, sticky="ew", rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None,
-              gridkwargs: dict = None):
+    def Scale(self, lower: float, upper: float, variable: Union[tk.IntVar, tk.DoubleVar], row: int = None,
+              col: int = None, padx=10, pady=10, sticky="ew", rowspan: int = 1, colspan: int = 1,
+              widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Scale (horizontal only, vertical is not supported with these themes)
 
@@ -976,14 +990,14 @@ class WidgetFrame:
         self.widgets.append(Widget(widget, "Scale" + str((lower, upper)), row, col, rowspan, colspan))
         return widget
 
-    def Progressbar(self, variable: tk.Variable, mode="determinate", lower=0, upper=100, row: int = None,
-                    col: int = None, padx=10, pady=10, sticky="ew", rowspan: int = 1, colspan: int = 1,
-                    widgetkwargs: dict = None, gridkwargs: dict = None):
+    def Progressbar(self, variable: tk.Variable, mode: Literal["determinate", "indeterminate"] ="determinate", lower=0,
+                    upper=100, row: int = None, col: int = None, padx=10, pady=10, sticky="ew", rowspan: int = 1,
+                    colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
         """
         Creates a ttk.Progressbar. If lower is not 0, it will link a second variable for processing
 
         :param variable: tk.Variable to control progressbar
-        :param mode: "determinate" for variable control, "indetermiante" for animation
+        :param mode: "determinate" for variable control, "indeterminate" for animation
         :param lower: min value (0 is highly recommended)
         :param upper: max value
         :param row: passed to grid

@@ -672,7 +672,8 @@ class WidgetFrame:
         widget = ttk.Spinbox(self.master, textvariable=variable, validatecommand=(validatefunc, validatecommandmode),
                              validate=validate, values=values, wrap=wrap, **widgetkwargs)
         row, col = self.getRow(row, col, rowspan, colspan)
-        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, columnspan=colspan, rowspan=rowspan, sticky=sticky,
+                    **gridkwargs)
         name = "Spinbox"
         if len(str(values)) < 25:
             name = "Spinbox(" + str(values)[1:-2] + ")"
@@ -714,7 +715,8 @@ class WidgetFrame:
         row, col = self.getRow(row, col, rowspan, colspan)
         if newframe:
             widgetFrame = ttk.Frame(self.master)
-            widgetFrame.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+            widgetFrame.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, columnspan=colspan,
+                             rowspan=rowspan, **gridkwargs)
         else:
             widgetFrame = self.master
 
@@ -776,7 +778,8 @@ class WidgetFrame:
         if default is None:
             default = values[0]
         widget = ttk.OptionMenu(self.master, variable, default, command=partial(command,*args), *values, **widgetkwargs)
-        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, columnspan=colspan, **gridkwargs)
+        widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, columnspan=colspan,
+                    **gridkwargs)
         name = "OptionMenu"
         if len(str(values)) < 25:
             name = "OptionMenu(" + str(values)[1:-2] + ")"
@@ -859,7 +862,8 @@ class WidgetFrame:
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
         row, col = self.getRow(row, col, rowspan, colspan)
         widget = Notebook(self.master, name, **widgetkwargs)
-        widget.notebook.grid(row = row, column=col, padx=padx, pady=pady, sticky=sticky, **gridkwargs)
+        widget.notebook.grid(row = row, column=col, padx=padx, pady=pady, sticky=sticky,
+                             columnspan=colspan, rowspan=rowspan, **gridkwargs)
         self.widgets.append(Widget(widget, "Notebook", row, col, rowspan, colspan, name))
 
         return widget

@@ -6,7 +6,8 @@ from TKinterModernThemes.ThemeStyles import ThemeStyles
 from functools import partial as PARTIAL #for calling funcs with args
 from warnings import warn
 from tkinter import ttk
-from typing import List, Union, Tuple, Literal
+from typing import List, Union, Tuple
+from typing_extensions import Literal
 import math
 import tkinter as tk
 

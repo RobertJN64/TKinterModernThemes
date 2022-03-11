@@ -24,5 +24,8 @@
 #             app.addData()
 #             app.addData()
 
-def test_none():
-    assert True #can't automate UI tests easily...
+# def test_none():
+#     assert True #can't automate UI tests easily...
+
+def test_load():
+    import TKinterModernThemes

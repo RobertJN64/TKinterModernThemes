@@ -1,7 +1,11 @@
 name: Tests
 
 on:
-  - push
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '30 7 * * *'
 
 jobs:
   test:

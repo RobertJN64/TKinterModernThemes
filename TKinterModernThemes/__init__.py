@@ -7,6 +7,7 @@ from TKinterModernThemes.WidgetFrame import WidgetFrame
 import tkinter as tk
 import json
 import sys
+import os
 
 firstWindow = True
 
@@ -60,7 +61,8 @@ class ThemedTKinterFrame(WidgetFrame):
             mode = "dark"
 
         try:
-            self.root.tk.call("source", __file__ + "/../themes/" + theme.lower() + "/" + theme.lower() + ".tcl")
+            path = os.path.abspath(__file__ + "/../themes/" + theme.lower() + "/" + theme.lower() + ".tcl")
+            self.root.tk.call("source", path)
         except tk.TclError:
             pass #theme already loaded...
         self.root.tk.call("set_theme", mode.lower())

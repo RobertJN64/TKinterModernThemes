@@ -156,6 +156,14 @@ with parameters in `super().__init__()`
 By default, themeconfig.json overrides command line args, which overrides manually passed in themes,
 which override the defaults.
 
+### Example:
+```json
+{
+  "theme": "azure",
+  "mode": "light"
+}
+```
+
 ## Notebooks and Paned Windows
 
 Notebooks and paned windows have been modified to include

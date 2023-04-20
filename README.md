@@ -313,3 +313,14 @@ class App(TKMT.ThemedTKinterFrame):
 if __name__ == "__main__":
     App()
 ```
+
+## Important info for Executable Creation
+
+If you are using tools like pyinstaller to make your python program
+into an .exe file, make sure you add `--collect-data TKinterModernThemes`
+to the command.
+
+For example: `pyinstaller --collect-data TKinterModernThemes main.py`
+
+If you are using auto-py-to-exe, you can add the library using the
+additional files option. (Add folder: `venv/Lib/sitepackages/TKinterModernThemes`)

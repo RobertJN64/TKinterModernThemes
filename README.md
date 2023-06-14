@@ -54,6 +54,8 @@ Azure is similar to park, with a blue as the accent color.
 ![](TKinterModernThemes/images/azuredark.jpg)
 ![](TKinterModernThemes/images/azurelight.jpg)
 
+All screenshots created by running [allwidgets.py](TKinterModernThemes/examples/allwidgets.py) with different theme settings.
+
 ## Integration
 
 These themes can be added by creating a themed frame.

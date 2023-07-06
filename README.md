@@ -7,13 +7,13 @@
 
 ![](TKinterModernThemes/images/parkdark.jpg)
 
-Tkinter is a powerful UI library included in the python standard library.
+TKinter is a powerful UI library included in the python standard library.
 Unfortunately, it is hard to customize and looks ugly by default.
 This library contains a set of modern themes to improve the look of tkinter.
 
 The themes in this library were developed by rdbende and licensed under the MIT license.
 https://github.com/rdbende
-This library makes these themes consistent and easier to implement into an existing project.
+This library fixes some naming consistency between these themes and adds simple logic for activating them.
 
 This library also has code to implement WidgetFrames, an
 expansion on TKinter's label frames that make creating complex
@@ -79,9 +79,9 @@ def buttonCMD():
 
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self):
-        super().__init__(str("TITLE"), str("park"), str("dark"))
-        self.button_frame = self.addLabelFrame(str("Frame Label"))
-        self.button_frame.Button(str("Button Text"), buttonCMD) #the button is dropped straight into the frame
+        super().__init__("TITLE", "park", "dark")
+        self.button_frame = self.addLabelFrame("Frame Label")
+        self.button_frame.Button("Button Text", buttonCMD) #the button is dropped straight into the frame
         self.run()
 
 App()
@@ -107,12 +107,12 @@ def buttonCMD():
 
 class App(TKMT.ThemedTKinterFrame):
         def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
-                super().__init__(str("TITLE"), theme, mode, usecommandlineargs, usethemeconfigfile)
-                self.Button(str("Auto placed button!"), buttonCMD)  # placed at row 0, col 0
+                super().__init__("TITLE", theme, mode, usecommandlineargs, usethemeconfigfile)
+                self.Button("Auto placed button!", buttonCMD)  # placed at row 0, col 0
 
-                self.button_frame = self.addLabelFrame(str("Frame Label"))  # placed at row 1, col 0
+                self.button_frame = self.addLabelFrame("Frame Label")  # placed at row 1, col 0
 
-                self.button_frame.Button(str("Button Text"), buttonCMD)  # the button is dropped straight into the frame
+                self.button_frame.Button("Button Text", buttonCMD)  # the button is dropped straight into the frame
 
                 button = ttk.Button(self.button_frame.master, text="Button in frame!")
                 button.grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
@@ -122,14 +122,14 @@ class App(TKMT.ThemedTKinterFrame):
 
                 button = ttk.Button(self.master, text="debugPrint() finds this button")
                 button.grid(row=3, column=0, padx=10, pady=10, sticky='nsew')
-                self.widgets.widgetlist.append(Widget(button, str("Button"), 3, 0, 1, 1,
+                self.widgets.widgetlist.append(Widget(button, "Button", 3, 0, 1, 1,
                                                       "debugPrint() finds this button"))
                 self.debugPrint()
                 self.run()
 
 
 if __name__ == "__main__":
-        App(str("park"), str("dark"))
+        App("park", "dark")
 ```
 
 WidgetFrames adds new items to each column below the last placed item in that column.
@@ -175,7 +175,7 @@ import TKinterModernThemes as TKMT
 
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self):
-        super().__init__(str("TKinter Custom Themes Demo"))
+        super().__init__("TKinter Custom Themes Demo")
         
         self.panedWindow = self.PanedWindow("Paned Window Test")
         self.pane1 = self.panedWindow.addWindow() #pane1 is a widget frame
@@ -208,16 +208,16 @@ import tkinter as tk
 
 class App(TKMT.ThemedTKinterFrame):
         def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
-                super().__init__(str("Switch"), theme, mode, usecommandlineargs=usecommandlineargs,
+                super().__init__("Switch", theme, mode, usecommandlineargs=usecommandlineargs,
                                  useconfigfile=usethemeconfigfile)
-                self.switchframe = self.addLabelFrame(str("Switch Frame"))
+                self.switchframe = self.addLabelFrame("Switch Frame")
                 self.switchvar = tk.BooleanVar()
                 self.switchframe.SlideSwitch("Switch", self.switchvar)
                 self.run()
 
 
 if __name__ == "__main__":
-        App(str("park"), str("dark"))
+        App("park", "dark")
 ```
 
 
@@ -232,9 +232,9 @@ import tkinter as tk
 
 class App(TKMT.ThemedTKinterFrame):
         def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
-                super().__init__(str("Toggle button"), theme, mode,
+                super().__init__("Toggle button", theme, mode,
                                  usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
-                self.togglebuttonframe = self.addLabelFrame(str("Toggle Button Frame"))
+                self.togglebuttonframe = self.addLabelFrame("Toggle Button Frame")
                 self.togglebuttonvar = tk.BooleanVar()
                 # Togglebutton
                 self.togglebutton = self.togglebuttonframe.ToggleButton(text="Toggle button",
@@ -243,7 +243,7 @@ class App(TKMT.ThemedTKinterFrame):
 
 
 if __name__ == "__main__":
-        App(str("park"), str("dark"))
+        App("park", "dark")
 ```
 
 
@@ -261,16 +261,16 @@ def handleButtonClick():
 
 class App(TKMT.ThemedTKinterFrame):
         def __init__(self, theme, mode, usecommandlineargs=True, usethemeconfigfile=True):
-                super().__init__(str("Accent button"), theme, mode,
+                super().__init__("Accent button", theme, mode,
                                  usecommandlineargs=usecommandlineargs, useconfigfile=usethemeconfigfile)
 
-                self.frame = self.addLabelFrame(str("Accent Button Frame"))
+                self.frame = self.addLabelFrame("Accent Button Frame")
                 self.frame.AccentButton("Accent Button", handleButtonClick)
                 self.run()
 
 
 if __name__ == "__main__":
-        App(str("park"), str("dark"))
+        App("park", "dark")
 ```
 
 See [allwidgets.py](TKinterModernThemes/examples/allwidgets.py) for info on each widget.
@@ -287,13 +287,13 @@ import random
 
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self): 
-        super().__init__(str("Matplotlib Example"))
+        super().__init__("Matplotlib Example")
 
-        self.graphframe = self.addLabelFrame(str("2D Graph"))
-        self.graphframe2 = self.addLabelFrame(str("3D Graph"), col=1)
+        self.graphframe = self.addLabelFrame("2D Graph")
+        self.graphframe2 = self.addLabelFrame("3D Graph", col=1)
         self.canvas, fig, self.ax, background, self.accent = self.graphframe.matplotlibFrame("Graph Frame Test")
         self.canvas2, fig2, self.ax2, _, _ = self.graphframe2.matplotlibFrame("Graph 3D", projection='3d')
-        buttonframe = self.addLabelFrame(str("Control Buttons"), colspan=2)
+        buttonframe = self.addLabelFrame("Control Buttons", colspan=2)
         buttonframe.Button("Add Data", self.addData)
         self.run()
 
@@ -315,7 +315,7 @@ if __name__ == "__main__":
     App()
 ```
 
-## Important info for Executable Creation
+## Important Info for Executable Creation
 
 If you are using tools like pyinstaller to make your python program
 into an .exe file, make sure you add `--collect-data TKinterModernThemes`

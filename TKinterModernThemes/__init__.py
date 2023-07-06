@@ -93,7 +93,5 @@ class ThemedTKinterFrame(WidgetFrame):
         self.root.mainloop()
 
     def handleExit(self):
-        global firstWindow
         self.root.destroy()
         self.root.quit()
-        firstWindow = True

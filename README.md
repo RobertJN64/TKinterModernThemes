@@ -58,7 +58,6 @@ Azure is similar to park, with a blue as the accent color.
 
 These themes can be added by creating a themed frame.
 A theme and mode (dark/light) can be specified.
-If you need multiple windows, all but one should be marked as topLevel.
 
 The frame for the app can be accessed by `self.root`, but WidgetFrames
 provide a cleaner alternative.

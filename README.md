@@ -54,6 +54,8 @@ Azure is similar to park, with a blue as the accent color.
 ![](TKinterModernThemes/images/azuredark.jpg)
 ![](TKinterModernThemes/images/azurelight.jpg)
 
+All screenshots created by running [allwidgets.py](TKinterModernThemes/examples/allwidgets.py) with different theme settings.
+
 ## Integration
 
 These themes can be added by creating a themed frame.
@@ -185,7 +187,7 @@ class App(TKMT.ThemedTKinterFrame):
 ## Resizable Windows
 
 The main app will recursively resize all subframes. This can be
-turned off with the `cleanResize` param in `run()`. Only frames
+turned off with the `cleanresize` param in `run()`. Only frames
 makes this resize only apply to frames that only have subframes, not
 widgets. This generally looks better, but can be disabled by setting
 `onlyFrames` to False.

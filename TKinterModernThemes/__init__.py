@@ -9,6 +9,8 @@ import json
 import sys
 import os
 
+assert False
+
 firstWindow = True
 
 class ThemedTKinterFrame(WidgetFrame):

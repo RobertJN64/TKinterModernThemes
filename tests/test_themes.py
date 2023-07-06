@@ -2,9 +2,6 @@ import TKinterModernThemes.examples.allwidgets as allwidgets
 import TKinterModernThemes.examples.layoutdemo as layoutdemo
 import TKinterModernThemes.examples.matplotlibexample as mplexample
 
-import os
-os.system('export DISPLAY=:0.0')
-
 def test_every_theme():
     for mode in ['dark', 'light']:
         for theme in ['azure', 'forest', 'sun-valley']:

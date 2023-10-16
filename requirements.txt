@@ -1,2 +1,1 @@
 matplotlib
-typing_extensions

@@ -377,7 +377,7 @@ class WidgetFrame:
         :param gridkwargs: Passed to grid placement
         """
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
-        widget = ttk.Frame(self.master, **gridkwargs)
+        widget = ttk.Frame(self.master, **widgetkwargs)
         frame = WidgetFrame(widget, name)
         row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan,
@@ -402,7 +402,7 @@ class WidgetFrame:
         :param gridkwargs: Passed to grid placement
         """
         widgetkwargs, gridkwargs = noneDict(widgetkwargs, gridkwargs)
-        widget = ttk.LabelFrame(self.master, text=text, **gridkwargs)
+        widget = ttk.LabelFrame(self.master, text=text, **widgetkwargs)
         frame = WidgetFrame(widget, text)
         row, col = self.getRow(row, col, rowspan, colspan)
         widget.grid(row=row, column=col, padx=padx, pady=pady, sticky=sticky, rowspan=rowspan, columnspan=colspan,

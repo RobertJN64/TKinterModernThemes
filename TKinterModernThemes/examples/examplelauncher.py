@@ -5,16 +5,23 @@ UI for launcing examples
 import TKinterModernThemes as TKMT
 import tkinter as tk
 
-import TKinterModernThemes.examples.allwidgets as demo1
-import TKinterModernThemes.examples.switch as demo2
-import TKinterModernThemes.examples.togglebutton as demo3
-import TKinterModernThemes.examples.accentbutton as demo4
-import TKinterModernThemes.examples.combinationdemo as demo5
-import TKinterModernThemes.examples.layoutdemo as demo6
+import TKinterModernThemes.examples.allwidgets as allwidgets_demo
+import TKinterModernThemes.examples.switch as switch_demo
+import TKinterModernThemes.examples.togglebutton as togglebutton_demo
+import TKinterModernThemes.examples.accentbutton as accentbutton_demo
+import TKinterModernThemes.examples.combinationdemo as combination_demo
+import TKinterModernThemes.examples.layoutdemo as layout_demo
+import TKinterModernThemes.examples.font as font_demo
 
-demos = [demo1, demo2, demo3, demo4, demo5, demo6]
-names = ["All Widgets Demo", "Slide Switch Demo", "Toggle Button Demo", "Accent Button Demo",
-         "Combination Demo", "Layout Demo"]
+demos = {
+    "All Widgets Demo": allwidgets_demo,
+    "Slide Switch Demo": switch_demo,
+    "Toggle Button Demo": togglebutton_demo,
+    "Accent Button Demo": accentbutton_demo,
+    "Combination Demo": combination_demo,
+    "Layout Demo": layout_demo,
+    "Font Demo": font_demo
+}
 
 class App(TKMT.ThemedTKinterFrame):
     def __init__(self):
@@ -30,8 +37,8 @@ class App(TKMT.ThemedTKinterFrame):
         self.usethemeconfigfile = tk.BooleanVar(value=True)
 
         self.buttonframe = self.addLabelFrame("Examples")
-        for i in range(0, len(demos)):
-            self.buttonframe.Button(names[i], self.runDemo, (demos[i],))
+        for name, demo in demos.items():
+            self.buttonframe.Button(name, self.runDemo, (demo,))
         self.buttonframe.Button("Matplotlib Demo", self.matplotdemo)
 
         self.menuframe = self.addLabelFrame("Config", col=1)

@@ -9,15 +9,18 @@ import TKinterModernThemes.examples.allwidgets as allwidgets_demo
 import TKinterModernThemes.examples.switch as switch_demo
 import TKinterModernThemes.examples.togglebutton as togglebutton_demo
 import TKinterModernThemes.examples.accentbutton as accentbutton_demo
+import TKinterModernThemes.examples.treeview as treeview_demo
 import TKinterModernThemes.examples.combinationdemo as combination_demo
 import TKinterModernThemes.examples.layoutdemo as layout_demo
 import TKinterModernThemes.examples.font as font_demo
+
 
 demos = {
     "All Widgets Demo": allwidgets_demo,
     "Slide Switch Demo": switch_demo,
     "Toggle Button Demo": togglebutton_demo,
     "Accent Button Demo": accentbutton_demo,
+    "Treeview Demo": treeview_demo,
     "Combination Demo": combination_demo,
     "Layout Demo": layout_demo,
     "Font Demo": font_demo

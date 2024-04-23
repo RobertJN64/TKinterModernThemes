@@ -5,12 +5,6 @@
         {"name": "light.tcl", "purpose": "Light theme config."},
         {"name": "dark", "purpose": "Dark theme images."},
         {"name": "light", "purpose": "Light theme images."}]}]},
-  {"name": "forest", "open": true, "subfiles": [{"name": "forest.tcl", "purpose": "Main theme file."},
-    {"name": "theme", "open": false, "subfiles":
-      [{"name": "dark.tcl", "purpose": "Dark theme config."},
-        {"name": "light.tcl", "purpose": "Light theme config."},
-        {"name": "dark", "purpose": "Dark theme images."},
-        {"name": "light", "purpose": "Light theme images."}]}]},
   {"name": "sun-valley", "open": false, "subfiles": [{"name": "sun-valley.tcl", "purpose": "Main theme file."},
     {"name": "theme", "open": true, "subfiles":
       [{"name": "dark.tcl", "purpose": "Dark theme config."},

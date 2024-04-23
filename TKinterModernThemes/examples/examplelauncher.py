@@ -13,7 +13,7 @@ import TKinterModernThemes.examples.treeview as treeview_demo
 import TKinterModernThemes.examples.combinationdemo as combination_demo
 import TKinterModernThemes.examples.layoutdemo as layout_demo
 import TKinterModernThemes.examples.font as font_demo
-
+import TKinterModernThemes.examples.theme_swap as theme_demo
 
 demos = {
     "All Widgets Demo": allwidgets_demo,
@@ -23,7 +23,8 @@ demos = {
     "Treeview Demo": treeview_demo,
     "Combination Demo": combination_demo,
     "Layout Demo": layout_demo,
-    "Font Demo": font_demo
+    "Font Demo": font_demo,
+    "Theme Swap Demo": theme_demo
 }
 
 class App(TKMT.ThemedTKinterFrame):

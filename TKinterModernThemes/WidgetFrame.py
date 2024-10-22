@@ -92,7 +92,10 @@ class Widget:
 
         self.commandstr = ""
         if command is not None:
-            self.commandstr = " -> " + command.__name__ + str(args)
+            if isinstance(command, PARTIAL):
+                self.commandstr = " -> " + command.func.__name__ + str(args)
+            else:
+                self.commandstr = " -> " + command.__name__ + str(args)
 
     def __str__(self):
         if type(self.widget) in [WidgetFrame, Notebook]:
@@ -241,7 +244,7 @@ class Notebook:
             frame.debugPrint(recursive)
 
 class PanedWindow:
-    def __init__(self, master, name, orient: Literal["vertical", 'horiztonal'] = 'vertical', **widgetkwargs):
+    def __init__(self, master, name, orient: Literal["vertical", "horizontal"] = 'vertical', **widgetkwargs):
         """Creates a widget frame based panedwindow."""
         self.panedwindow = ttk.PanedWindow(master, orient=orient, **widgetkwargs)
         self.windows = []
@@ -868,7 +871,7 @@ class WidgetFrame:
 
         return widget
 
-    def PanedWindow(self, name, orient: Literal["vertical", 'horiztonal'] = 'vertical', row: int = None,
+    def PanedWindow(self, name, orient: Literal["vertical", 'horizontal'] = 'vertical', row: int = None,
                     col: int = None, padx=10, pady=10, sticky="nsew",
                     rowspan: int = 1, colspan: int = 1, widgetkwargs: dict = None, gridkwargs: dict = None):
 

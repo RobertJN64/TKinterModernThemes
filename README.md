@@ -24,7 +24,7 @@ layouts much quicker and more readable.
 `pip install TKinterModernThemes`
 
 ## Why use themes?
-Tkinter looks really ugly be default.
+Tkinter looks really ugly by default.
 
 ![](TKinterModernThemes/images/notheme.jpg)
 

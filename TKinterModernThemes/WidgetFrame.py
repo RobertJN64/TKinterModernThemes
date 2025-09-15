@@ -1059,7 +1059,7 @@ class WidgetFrame:
             from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
         except ImportError:
             warn("Matplotlib is required to use this feature.")
-            return None, None, None, None
+            return None, None, None, None, None
 
         if figpadx is None:
             if projection == '3d':

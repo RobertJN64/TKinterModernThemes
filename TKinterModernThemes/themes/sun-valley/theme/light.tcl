@@ -2,8 +2,6 @@
 
 # A stunning light theme for ttk based on Microsoft's Sun Valley visual style 
 
-package require Tk 8.6
-
 namespace eval ttk::theme::sun-valley-light {
     variable version 1.0
     package provide ttk::theme::sun-valley-light $version

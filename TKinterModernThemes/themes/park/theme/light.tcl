@@ -2,8 +2,6 @@
 
 # Modified from the forest theme, a beautiful and modern ttk theme inspired by Excel.
 
-package require Tk 8.6
-
 namespace eval ttk::theme::park-light {
 
     variable version 1.0
